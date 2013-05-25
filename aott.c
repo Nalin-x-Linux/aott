@@ -1,5 +1,7 @@
 /*
 This is a small programm writen by Nalin.x.Linux
+Please change the value of macro named directory to 
+where the data files are.
 
 Compile using folowing command
 gcc -Wall -o angela new.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags --libs gtk+-3.0 libcanberra-gtk3`
@@ -23,7 +25,7 @@ gcc -Wall -o angela new.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags -
 #define SENTENCE 2
 
 //Data Directory
-#define directory "/usr/share/angela-open-talking-typer/"
+#define directory "usr/share/angela-open-talking-typer/"
 
 //Point
 #define SKIP -10
