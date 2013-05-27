@@ -4,7 +4,7 @@ Please change the value of macro named directory to
 where the data files are.
 
 Compile using folowing command
-gcc -Wall -o angela new.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags --libs gtk+-3.0 libcanberra-gtk3`
+gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags --libs gtk+-3.0 libcanberra-gtk3`
 */
 
 #include <stdio.h>
@@ -229,7 +229,7 @@ void set_hand(gchar* key)
 	{
 		if (strcmp(letter[i],key)==0)
 		{			
-			sprintf(file,"%shands_%s.gif",directory,value[i]);
+			sprintf(file,"%shands/hands_%s.gif",directory,value[i]);
 			animation = gdk_pixbuf_animation_new_from_file (file, NULL);
 		}
 	}
@@ -388,15 +388,18 @@ int main(int argc,char *argv[])
 	//GUI
 	GtkBuilder* builder = gtk_builder_new();
 	gchar* glade_file = malloc(70);
-	sprintf(glade_file,"%s/ui/ui.glade",directory);
+	sprintf(glade_file,"%sui/ui.glade",directory);
 	gtk_builder_add_from_file (builder,glade_file, NULL);
 	GtkWidget* window = GTK_WIDGET(gtk_builder_get_object (builder, "window"));
 
-	//Reading data from /usr/share/angela-open-talking-typer/data/
+	//Reading data from directory/data/
+	gchar* data_dir = malloc(200);;
+	sprintf(data_dir,"%sdata",directory);	
+
 	combobox = GTK_COMBO_BOX_TEXT(gtk_builder_get_object (builder, "comboboxtext"));
 	g_signal_connect(G_OBJECT(combobox),"changed",G_CALLBACK(set_language),NULL);	
 	DIR *dir;	struct dirent *ent;
-	if ((dir = opendir ("/usr/share/angela-open-talking-typer/data/")) != NULL){
+	if ((dir = opendir (data_dir)) != NULL){
 		while ((ent = readdir (dir)) != NULL){
 			if (ent->d_name[0] != '.'){
 				gtk_combo_box_text_append(combobox,NULL,ent->d_name);
