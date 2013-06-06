@@ -3,6 +3,9 @@ This is a small programm writen by Nalin.x.Linux
 Please change the value of macro named directory to 
 where the data files are.
 
+install dependence's with following command
+apt-get install libespeak-dev libcanberra-gtk3-dev libgtk-3-dev git 
+
 Compile using folowing command
 gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags --libs gtk+-3.0 libcanberra-gtk3`
 */
