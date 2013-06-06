@@ -141,9 +141,8 @@ void speak(gchar st[],bool speak,bool append)
 	else{
 		strcat(speak_text,st);}
 	
-
 	if (speak == 1)	{
-		//g_thread_new("speak",real_speak,NULL);
+		g_thread_new("speak",real_speak,NULL);
 		}	
 }
 
@@ -265,10 +264,9 @@ void key_release_event()
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
-//gdk_threads_add_idle((GSourceFunc)rotate,NULL);
-gdk_threads_enter ();
-g_thread_new("rotate",rotate,NULL);
-gdk_threads_leave();
+//gdk_threads_enter ();
+//g_thread_new("rotate",rotate,NULL);
+//gdk_threads_leave();
 		gtk_entry_set_text(entry,"");
 		correct = "";
 		time_taken = difftime(time(0),time_qustion);
