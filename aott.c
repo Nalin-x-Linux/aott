@@ -20,6 +20,7 @@ gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags 
 #include <canberra.h>
 #include <stdbool.h>
 #include <dirent.h> 
+#include "tts.h"
 
 
 //Lesson Type
@@ -59,7 +60,8 @@ long int time_lesson_start;
 //Mark 
 int mark;
 
-
+//TTS Voice 
+gchar *voice;
 
 struct lesson_def lessons[100];
 
@@ -70,11 +72,6 @@ int iter;
 
 //Qustion
 gchar *qustion;
-
-//Espeak 
-gchar *voice;
-gchar *speak_text;
-espeak_POSITION_TYPE position_type;
 
 //Gtk
 GtkSpinButton *spinbutton;
@@ -114,14 +111,7 @@ void set_point_view(int win, int current)
 		gtk_image_set_from_file(GTK_IMAGE(image_current_point_2),file);}
 }
 
-void *real_speak()
-{
-	espeak_Cancel();
-    int Size = strlen(speak_text)+1;    
-    espeak_Synth(speak_text, Size, 0, position_type, 0,	espeakCHARS_AUTO,0, NULL);
-    espeak_Synchronize();
-    return NULL;
-}
+
 
 void *rotate()
 {
@@ -136,29 +126,13 @@ return NULL;
 }
 
 
-void speak(gchar st[],bool speak,bool append)
-{
-	
-	if (append == 0){
-		strcpy(speak_text,st);}
-	else{
-		strcat(speak_text,st);}
-	
-	if (speak == 1)	{
-		g_thread_new("speak",real_speak,NULL);
-		}	
-}
-
 
 void play(char* file)
 {
 	gchar* temp = malloc(200);
 	sprintf(temp,"%ssounds/%s",directory,file);
 	ca_context_cancel(context,-1);
-	while(espeak_IsPlaying())
-	{
-		g_print("Playing");
-	}
+
 	ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
 }
 
@@ -177,7 +151,7 @@ void load(gchar language_file[])
 	//Setting voice
 	voice = malloc(20);
 	fscanf(fp,"%s",voice);
-	espeak_SetVoiceByName(voice);
+	tts_set_voice(voice);
 	
 	for(i=0;;i++){
 		fscanf(fp,"%s %s\n",letter[i],value[i]);
@@ -248,9 +222,9 @@ gtk_widget_grab_focus(GTK_WIDGET(entry));
 	g_print("%s",qustion);
 	gtk_text_buffer_set_text(textbuffer,qustion,-1);
 	if (iter != 100)
-		speak(qustion,1,0);
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
 	else
-		speak(qustion,1,1);
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,APPEND,"%s",qustion);
 	iter = 0;
 	if (lessons[lesson].type != LETTERS)
 		gtk_text_buffer_set_text(sub_textbuffer,
@@ -302,7 +276,7 @@ void key_release_event()
 		{
 			correct=strdup(out);
 			iter++;
-			speak(g_utf8_substring(qustion,iter,iter+1),1,0);
+			//speak(g_utf8_substring(qustion,iter,iter+1),1,0);
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
 			//play("next.ogg");
 			if (lessons[lesson].type != LETTERS)
@@ -312,8 +286,8 @@ void key_release_event()
 		{
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
-			speak("Not that! Type ",0,0);
-			speak(g_utf8_substring(qustion,iter,iter+1),1,1);
+			//speak("Not that! Type ",0,0);
+			//speak(g_utf8_substring(qustion,iter,iter+1),1,1);
 		}
 	}
 }
@@ -325,7 +299,7 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 	lesson = gtk_spin_button_get_value_as_int(spinbutton);
 	lesson += count;
 	gtk_spin_button_set_value(spinbutton,lesson);
-	speak(lessons[lesson].instruction,0,0);
+	//speak(lessons[lesson].instruction,0,0);
 	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
 	//To Pass information that which function is called run()
 	iter = 100;
@@ -346,7 +320,8 @@ void activate()
 } 
 
 void hear_instruction(){
-	speak(lessons[lesson].instruction,1,0);}
+	//speak(lessons[lesson].instruction,1,0);
+	}
 
 void set_language()
 {	
@@ -371,8 +346,7 @@ int main(int argc,char *argv[])
 	correct = malloc(200);
 	
 	//Espeak
-	espeak_Initialize(AUDIO_OUTPUT_PLAYBACK, 500, NULL, 0 ); 
-	speak_text = malloc(500);
+	tts_init();
 	
 	//Creating Canbra context(Sound)
 	ca_context_create(&context);  
@@ -480,7 +454,7 @@ int main(int argc,char *argv[])
 	//Level Spinn Button
 	spinbutton = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_level"));
 	
-	//speak("Welcome to Angela Open Talking Typer");
+	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Welcome to Angela Open Talking Typer");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox),0);
 	
 	set_point_view(ZERO,ZERO);
