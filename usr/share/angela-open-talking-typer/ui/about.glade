@@ -1,159 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkWindow" id="window">
+  <object class="GtkAboutDialog" id="aboutdialog">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">About-Angela-Open-Math-Teacher</property>
-    <property name="window_position">center</property>
-    <property name="default_width">450</property>
-    <property name="default_height">500</property>
-    <child>
-      <object class="GtkTable" id="table1">
-        <property name="visible">True</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">About Angela-Typing-Tutor</property>
+    <property name="icon">Icon.png</property>
+    <property name="type_hint">dialog</property>
+    <property name="program_name">Angela-Typing-Tutor</property>
+    <property name="version">2.3</property>
+    <property name="copyright" translatable="yes">Copyright © 2012-2013 Nalin.x.Linux</property>
+    <property name="comments" translatable="yes">Angel-Open-Talking-Typer is a simple eye's free
+ key-board practicing application.</property>
+    <property name="website">https://github.com/Nalin-x-Linux/aott</property>
+    <property name="website_label" translatable="yes">Visit Angela-Typing-Tutor on Github</property>
+    <property name="license" translatable="yes">GPL3</property>
+    <property name="authors">Nalin.x.Linux
+Anilkumar KV</property>
+    <property name="documenters">Shalini Sathyaseelan
+Sathyaseelan</property>
+    <property name="artists">Nahar
+Ajayakumar Payyanur
+Manuel eduardo cortéz vallejo
+Agesh Kumar
+Vinod-Kollam
+Hakkeem IT@School  </property>
+    <property name="logo">icon.png</property>
+    <property name="wrap_license">True</property>
+    <property name="license_type">gpl-3-0</property>
+    <signal name="response" handler="about_close" swapped="no"/>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="aboutdialog-vbox">
         <property name="can_focus">False</property>
-        <property name="n_rows">5</property>
-        <property name="n_columns">5</property>
-        <child>
-          <object class="GtkLabel" id="label1">
-            <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="aboutdialog-action_area1">
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">&lt;b&gt;&lt;span size = "xx-large" &gt;Angela-Open-Talking-Typer 2.2&lt;/span&gt;&lt;/b&gt;</property>
-            <property name="use_markup">True</property>
+            <property name="layout_style">end</property>
           </object>
           <packing>
-            <property name="right_attach">5</property>
-            <property name="y_options">GTK_FILL</property>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="scrolledwindow1">
+          <object class="GtkLabel" id="label">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="border_width">12</property>
-            <child>
-              <object class="GtkViewport" id="viewport1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkTable" id="table2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="n_rows">9</property>
-                    <property name="n_columns">4</property>
-                    <child>
-                      <object class="GtkLabel" id="label2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;&lt;span size = "large"&gt;
-Angel-Open-Talking-Typer is a simple eye's free
- key-board practicing application. And this
- software is completely dedicated
- to my friend Angela Poveda!
-&lt;/span&gt;&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                        <property name="justify">center</property>
-                      </object>
-                      <packing>
-                        <property name="right_attach">4</property>
-                        <property name="y_options">GTK_FILL</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label3">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;&lt;span size = "x-large" &gt;Angela-Poveda&lt;/span&gt;&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </object>
-                      <packing>
-                        <property name="right_attach">4</property>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
-                        <property name="y_options">GTK_FILL</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkImage" id="image1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="pixbuf">angela</property>
-                      </object>
-                      <packing>
-                        <property name="right_attach">4</property>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label5">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;&lt;span size = "x-large" &gt;My other softwares are given below&lt;/span&gt;&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </object>
-                      <packing>
-                        <property name="right_attach">4</property>
-                        <property name="top_attach">5</property>
-                        <property name="bottom_attach">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLinkButton" id="Linux-Intelligent-Ocr-Solution">
-                        <property name="label" translatable="yes">Linux-Intelligent-Ocr-Solution</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="relief">none</property>
-                        <property name="uri">https://sourceforge.net/p/lios</property>
-                      </object>
-                      <packing>
-                        <property name="right_attach">3</property>
-                        <property name="top_attach">6</property>
-                        <property name="bottom_attach">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLinkButton" id="Sharada-Braille-Writer">
-                        <property name="label" translatable="yes">Sharada-Braille-Writer</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="relief">none</property>
-                        <property name="uri">https://sourceforge.net/p/sbrw</property>
-                      </object>
-                      <packing>
-                        <property name="right_attach">3</property>
-                        <property name="top_attach">7</property>
-                        <property name="bottom_attach">9</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLinkButton" id="Angela-Open-Talking-Typer">
-                        <property name="label" translatable="yes">HOME</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="relief">none</property>
-                        <property name="uri">https://sourceforge.net/p/aott</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">3</property>
-                        <property name="right_attach">4</property>
-                        <property name="top_attach">6</property>
-                        <property name="bottom_attach">9</property>
-                      </packing>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Dedicated to Benjamin</property>
           </object>
           <packing>
-            <property name="right_attach">5</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">5</property>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
