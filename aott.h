@@ -7,7 +7,7 @@
 #define SENTENCE 2
 
 //Data Directory
-#define directory "usr/share/angela-open-talking-typer/"
+#define directory "usr/share/angela-typing-tutor/"
 
 //Point
 #define SKIP -10
