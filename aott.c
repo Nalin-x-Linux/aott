@@ -106,6 +106,17 @@ void play(char* file)
 }
 
 
+void play_music()
+{
+        gchar temp[200];
+	int random_num = rand()%5;
+        sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
+        ca_context_cancel(context,-1);
+
+        ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
+
+
+}
 
 void load(gchar language_file[])
 {
@@ -216,6 +227,7 @@ void key_release_event()
 		if (mark == lessons[lesson].win_point){
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
+			play_music();
 			jump_to_next_or_previous_lesson(NULL,+1);
 			}
 		else{
@@ -233,7 +245,7 @@ void key_release_event()
 			iter++;
 			//speak(g_utf8_substring(qustion,iter,iter+1),1,0);
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
-			//play("next.ogg");
+			play("ok.ogg");
 			if (lessons[lesson].type != LETTERS)
 			gtk_text_buffer_set_text(sub_textbuffer,
 					g_utf8_substring(qustion,iter,iter+1),-1);}
