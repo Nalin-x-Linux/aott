@@ -8,7 +8,7 @@
 void set_hand(gchar* key)
 {
 	int i;
-	char* file = malloc(100);	
+	char file[100];	
 	GdkPixbufAnimation * animation;
 	for(i=0;i<100;i++)
 	{
@@ -16,14 +16,15 @@ void set_hand(gchar* key)
 		{			
 			sprintf(file,"%shands/hands_%s.gif",directory,value[i]);
 			animation = gdk_pixbuf_animation_new_from_file (file, NULL);
+			gtk_image_set_from_animation (GTK_IMAGE(image_hand), animation);
 		}
 	}
-	gtk_image_set_from_animation (GTK_IMAGE(image_hand), animation);
+	
 }
 
 void set_point_view(int win, int current)
 {
-	gchar *file = malloc(80);
+	gchar file[80];
 	if (win != SKIP){
 		sprintf(file,"%snumber/%d.png",directory,win/10);
 		gtk_image_set_from_file(GTK_IMAGE(image_win_point_1),file);
