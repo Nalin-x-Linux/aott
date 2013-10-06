@@ -207,10 +207,6 @@ void key_release_event()
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
-		
-//gdk_threads_enter ();
-//g_thread_new("rotate",rotate,NULL);
-//gdk_threads_leave();
 		gtk_entry_set_text(entry,"");
 		correct = "";
 		time_taken = difftime(time(0),time_qustion);
@@ -255,21 +251,39 @@ void key_release_event()
 		{
 			correct=strdup(out);
 			iter++;
-			//speak(g_utf8_substring(qustion,iter,iter+1),1,0);
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
 			play("ok.ogg");
-			if (lessons[lesson].type != LETTERS)
-			{
+			if (lessons[lesson].type != LETTERS){
 				clear_tag();
-				set_tag(iter,iter+1,"#FFFFF",NULL);
-				}
+				set_tag(iter,iter+1,"#FFFFF",NULL);	}
+			
+			
+			if (lessons[lesson].type == SENTENCE && g_utf8_collate(g_utf8_substring(qustion,iter-1,iter)," ") == 0)	{
+				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",g_utf8_substring(qustion,iter,g_utf8_strlen(qustion,-1)));
 			}
+						
+		}
 		else
 		{
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
 			total_errors += 1;
-			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",g_utf8_substring(qustion,iter,iter+1));
+			gchar temp[1000];
+			int j = iter;
+			temp[0] = '\0';
+			while(1)
+			{
+				if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"\0") == 0 ||
+					g_utf8_collate(g_utf8_substring(qustion,j,j+1)," ") == 0 )
+					{
+						break;
+					}
+				
+				g_strlcat(temp,g_utf8_substring(qustion,j,j+1),100);
+				g_strlcat(temp,". ",100);
+				j++;
+			}
+			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",temp);
 		}
 	}
 }
