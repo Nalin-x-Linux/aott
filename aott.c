@@ -44,7 +44,11 @@ long int time_qustion;
 long int time_lesson_start;
 
 //Mark 
-int mark;
+int point;
+int word_count;
+int wpm;
+int total_errors;
+float efficiency;
 
 //TTS Voice 
 gchar *voice;
@@ -109,7 +113,7 @@ void play(char* file)
 void play_music()
 {
         gchar temp[200];
-	int random_num = rand()%5;
+		int random_num = rand()%5;
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
         ca_context_cancel(context,-1);
 
@@ -182,8 +186,8 @@ gchar* random_qustion_generator()
 void run()
 {
 	correct = "";
-gdk_threads_enter ();
-gtk_widget_grab_focus(GTK_WIDGET(entry));
+	gdk_threads_enter ();
+	gtk_widget_grab_focus(GTK_WIDGET(entry));
 	qustion = random_qustion_generator();
 	g_print("%s",qustion);
 	gtk_text_buffer_set_text(textbuffer,qustion,-1);
@@ -223,16 +227,27 @@ void key_release_event()
 		else if(time_taken <= 16)
 		play("grading_ok.ogg");				
 		else
-		play("try_more_fast.ogg");
-		if (mark == lessons[lesson].win_point){
+		{
+			play("try_more_fast.ogg");
+			point--;
+		}
+
+		if ( point == lessons[lesson].win_point){
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
 			play_music();
+			wpm = (60 / time_taken) * word_count;
+			efficiency = lessons[lesson].win_point/word_count*100;
+			efficiency -= total_errors;			
+			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
+				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %f!",
+				word_count,wpm,total_errors,time_taken,efficiency);							
 			jump_to_next_or_previous_lesson(NULL,+1);
 			}
 		else{
-			set_point_view(SKIP,mark);
-			mark++;
+			set_point_view(SKIP,point);
+			point++;
+			word_count += 1;
 			run();
 		}	 
 	}
@@ -253,15 +268,18 @@ void key_release_event()
 		{
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
-			//speak("Not that! Type ",0,0);
-			//speak(g_utf8_substring(qustion,iter,iter+1),1,1);
+			total_errors += 1;
+			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",g_utf8_substring(qustion,iter,iter+1));
 		}
 	}
 }
 
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 {
-	mark = 1;
+	point = 0;
+	word_count = 0;
+	total_errors = 0;
+	
 	time_lesson_start = time(0);
 	lesson = gtk_spin_button_get_value_as_int(spinbutton);
 	lesson += count;
@@ -385,7 +403,7 @@ int main(int argc,char *argv[])
 	gtk_widget_modify_font(GTK_WIDGET(sub_textview),font);
 	gdk_color_parse("#FFFF00",&color);
 	gtk_widget_modify_text(GTK_WIDGET(sub_textview),GTK_STATE_NORMAL,&color);
-	gdk_color_parse("#000000",&color);
+	gdk_color_parse("#FFFF00",&color);
 	gtk_widget_modify_base(GTK_WIDGET(sub_textview),GTK_STATE_NORMAL,&color);	
 	
 	//Image
