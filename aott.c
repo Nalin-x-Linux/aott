@@ -211,19 +211,22 @@ void key_release_event()
 		correct = "";
 		time_taken = difftime(time(0),time_qustion);
 		g_print ( "\nAnswer time = %d\n",time_taken);
-		if (time_taken <= 4)
-		play("excellent.ogg");
-		else if	(time_taken <= 8)
-		play("very_good.ogg");
-		else if (time_taken <= 12)
-		play("good.ogg");
-		else if(time_taken <= 16)
-		play("grading_ok.ogg");				
-		else
-		{
+		if (time_taken <= 4){
+			play("excellent.ogg");
+			set_face("hard_smile");}
+		else if(time_taken <= 8){
+			play("very_good.ogg");
+			set_face("laugh");}
+		else if (time_taken <= 12){
+			play("good.ogg");
+			set_face("wink");}
+		else if(time_taken <= 16){
+			play("grading_ok.ogg");
+			set_face("uncertain");}				
+		else{
 			play("try_more_fast.ogg");
-			point--;
-		}
+			set_face("sad");
+			point--;}
 
 		if ( point == lessons[lesson].win_point){
 			time_taken = difftime(time(0),time_lesson_start);
@@ -249,10 +252,11 @@ void key_release_event()
 		if (strcmp(g_utf8_substring(out,iter,iter+1),
 					g_utf8_substring(qustion,iter,iter+1)) == 0)
 		{
+			//Correct letter pressed
 			correct=strdup(out);
 			iter++;
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
-			play("ok.ogg");
+			play("tock.oga");
 			if (lessons[lesson].type != LETTERS){
 				clear_tag();
 				set_tag(iter,iter+1,"#FFFFF",NULL);	}
@@ -265,6 +269,7 @@ void key_release_event()
 		}
 		else
 		{
+			//Wrong pressed
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
 			total_errors += 1;
@@ -273,14 +278,30 @@ void key_release_event()
 			temp[0] = '\0';
 			while(1)
 			{
-				if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"\0") == 0 ||
-					g_utf8_collate(g_utf8_substring(qustion,j,j+1)," ") == 0 )
-					{
-						break;
-					}
-				
-				g_strlcat(temp,g_utf8_substring(qustion,j,j+1),100);
-				g_strlcat(temp,". ",100);
+				if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"\0") == 0)
+					break;
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1)," ") == 0 ){
+					g_strlcat(temp,"space",100);
+					break;}
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),",") == 0)
+					g_strlcat(temp,"comma",100);
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),".") == 0)
+					g_strlcat(temp,"full stop",100);
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"\'") == 0)
+					g_strlcat(temp,"apostophe",100);
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),";") == 0)
+					g_strlcat(temp,"semicolon",100);
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),":") == 0)
+					g_strlcat(temp,"colon",100);
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"?") == 0)
+					g_strlcat(temp,"Qustion mark",100);
+				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"-") == 0)
+					g_strlcat(temp,"Hyphen",100);
+				else
+				{
+					g_strlcat(temp,g_utf8_substring(qustion,j,j+1),100);
+					g_strlcat(temp,". ",100);
+				}
 				j++;
 			}
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",temp);
@@ -333,6 +354,9 @@ int main(int argc,char *argv[])
 {
 
 	correct = malloc(200);
+	
+	//File
+	char file[100];
 	
 	//Espeak
 	tts_init();
@@ -422,6 +446,10 @@ int main(int argc,char *argv[])
 	image_current_point_1 = GTK_WIDGET(gtk_builder_get_object(builder,"image_current_point_1"));
 	image_current_point_2 = GTK_WIDGET(gtk_builder_get_object(builder,"image_current_point_2"));
 	
+	//smile image
+	face_image = GTK_WIDGET(gtk_builder_get_object(builder,"face_image"));
+	sprintf(file,"%sfaces/plain.png",directory);
+	animation_test = gdk_pixbuf_animation_new_from_file (file, NULL);
 		
 	//Instruction Label
 	instruction_label = GTK_LABEL(gtk_builder_get_object(builder,"instruction_label"));
@@ -441,6 +469,7 @@ int main(int argc,char *argv[])
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox),0);
 	
 	set_point_view(ZERO,ZERO);
+	set_face("smile");
 		
 	gtk_widget_show(window);
 	gtk_main();

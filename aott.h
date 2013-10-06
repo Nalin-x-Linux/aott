@@ -21,5 +21,6 @@ GtkWidget * image_current_point_1;
 GtkWidget * image_current_point_2;
 GtkWidget * image_win_point_1;
 GtkWidget * image_win_point_2;
-
+GtkWidget * face_image;
 GtkTextBuffer* textbuffer;
+GdkPixbufAnimation * animation_test;

@@ -4,6 +4,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+void *reset_face()
+{
+	sleep(2);
+	gtk_image_set_from_animation (GTK_IMAGE(face_image), animation_test);
+	return NULL;
+}
+
+void set_face(gchar* emotion)
+{
+	char file[100];
+	sprintf(file,"%sfaces/%s.png",directory,emotion);
+	gtk_image_set_from_file(GTK_IMAGE(face_image),file);
+	g_thread_create(&reset_face,NULL,FALSE,NULL);
+}
 
 void set_hand(gchar* key)
 {
@@ -19,7 +33,6 @@ void set_hand(gchar* key)
 			gtk_image_set_from_animation (GTK_IMAGE(image_hand), animation);
 		}
 	}
-	
 }
 
 void set_point_view(int win, int current)
@@ -56,7 +69,7 @@ void clear_tag()
 	GtkTextIter iter_2;
 	GtkTextTag *tag;
 	tag = gtk_text_buffer_create_tag(textbuffer,NULL,NULL);
-	g_object_set(tag,"foreground-rgba","#002CFF", NULL);
+	g_object_set(tag,"foreground-rgba","#FFFFFF", NULL);
 	gtk_text_buffer_get_bounds(textbuffer,&iter_1,&iter_2); 
 	gtk_text_buffer_apply_tag(textbuffer,tag,&iter_1,&iter_2);
 	
@@ -67,12 +80,16 @@ void set_tag(int start,int end,char* fg_color,char* bg_color)
 	GtkTextTag *tag;
 	GtkTextIter iter_1;
 	GtkTextIter iter_2;
+	GdkColor color;
 	
 	tag = gtk_text_buffer_create_tag(textbuffer,NULL,NULL);
-	if (fg_color != NULL)
-		g_object_set(tag,"foreground-rgba",fg_color, NULL);
+	if (fg_color != NULL){
+		gdk_color_parse(fg_color,&color);
+		g_object_set(tag,"foreground-gdk",&color, NULL);}
 	if (bg_color != NULL)
-		g_object_set(tag,"background-rgba",bg_color, NULL);
+	{
+		gdk_color_parse(bg_color,&color);
+		g_object_set(tag,"background-gdk",&color, NULL);}
 	
 	gtk_text_buffer_get_iter_at_offset(textbuffer,&iter_1,start);
 	gtk_text_buffer_get_iter_at_offset(textbuffer,&iter_2,end);

@@ -238,10 +238,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image_emotion">
+          <object class="GtkImage" id="face_image">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="pixbuf">start.png</property>
+            <property name="pixbuf">icon.png</property>
           </object>
           <packing>
             <property name="top_attach">4</property>
