@@ -22,6 +22,7 @@ gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags 
 #include <dirent.h> 
 #include "tts.h"
 #include "aott.h"
+//#include "ui.h"
 
 gchar word[100][50];
 gchar sentence[100][100];
@@ -66,13 +67,9 @@ gchar *qustion;
 //Gtk
 GtkSpinButton *spinbutton;
 GtkEntry* entry;
-GtkTextBuffer* textbuffer;
 GtkComboBoxText* combobox;
 GtkLabel* instruction_label;
 
-
-GtkTextView* sub_textview;
-GtkTextBuffer* sub_textbuffer;
 
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count);
 void key_release_event();
@@ -105,7 +102,6 @@ void play(char* file)
 	gchar* temp = malloc(200);
 	sprintf(temp,"%ssounds/%s",directory,file);
 	ca_context_cancel(context,-1);
-
 	ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
 }
 
@@ -116,7 +112,6 @@ void play_music()
 		int random_num = rand()%5;
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
         ca_context_cancel(context,-1);
-
         ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
 
 
@@ -196,11 +191,12 @@ void run()
 	else
 		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,APPEND,"%s",qustion);
 	iter = 0;
-	if (lessons[lesson].type != LETTERS)
-		gtk_text_buffer_set_text(sub_textbuffer,
-					g_utf8_substring(qustion,iter,iter+1),-1);
+	if (lessons[lesson].type != LETTERS){
+		clear_tag();
+		set_tag(iter,iter+1,"#FFFFF",NULL);}
+		
 	set_hand(g_utf8_substring(qustion,iter,iter+1));
-gdk_threads_leave();
+	gdk_threads_leave();
 	time(&time_qustion);
 }
 
@@ -211,6 +207,7 @@ void key_release_event()
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
+		
 //gdk_threads_enter ();
 //g_thread_new("rotate",rotate,NULL);
 //gdk_threads_leave();
@@ -240,8 +237,8 @@ void key_release_event()
 			efficiency = lessons[lesson].win_point/word_count*100;
 			efficiency -= total_errors;			
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
-				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %f!",
-				word_count,wpm,total_errors,time_taken,efficiency);							
+				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
+				word_count,wpm,total_errors,time_taken,(int)efficiency);							
 			jump_to_next_or_previous_lesson(NULL,+1);
 			}
 		else{
@@ -262,8 +259,11 @@ void key_release_event()
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
 			play("ok.ogg");
 			if (lessons[lesson].type != LETTERS)
-			gtk_text_buffer_set_text(sub_textbuffer,
-					g_utf8_substring(qustion,iter,iter+1),-1);}
+			{
+				clear_tag();
+				set_tag(iter,iter+1,"#FFFFF",NULL);
+				}
+			}
 		else
 		{
 			gtk_entry_set_text(entry,correct);
@@ -289,9 +289,11 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 	//To Pass information that which function is called run()
 	iter = 100;
 	if (lessons[lesson].type == LETTERS){
-		gtk_widget_hide(GTK_WIDGET(sub_textview));}
+		//gtk_widget_hide(GTK_WIDGET(sub_textview));
+		}
 	else{
-		gtk_widget_show(GTK_WIDGET(sub_textview));}
+		//gtk_widget_show(GTK_WIDGET(sub_textview));
+		}
 	set_point_view(lessons[lesson].win_point,ZERO);
 	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
 	run();
@@ -388,23 +390,16 @@ int main(int argc,char *argv[])
 	GtkTextView* textview = GTK_TEXT_VIEW(gtk_builder_get_object(builder,"textview"));
 	textbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(builder,"textbuffer"));
 	gtk_text_buffer_set_text(textbuffer,"Welcome",-1);
-	PangoFontDescription *font =  pango_font_description_from_string("Purisa 60");	
+	PangoFontDescription *font =  pango_font_description_from_string("Sans Bold 60");	
 	gtk_widget_modify_font(GTK_WIDGET(textview),font);
-	GdkColor color;
-	gdk_color_parse("#FFFF00",&color);
-	gtk_widget_modify_text(GTK_WIDGET(textview),GTK_STATE_NORMAL,&color);
-	gdk_color_parse("#000000",&color);
-	gtk_widget_modify_base(GTK_WIDGET(textview),GTK_STATE_NORMAL,&color);
-
-	//Letter Textview
-	sub_textview = GTK_TEXT_VIEW(gtk_builder_get_object(builder,"sub_textview"));
-	sub_textbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(builder,"sub_textbuffer"));
-	font =  pango_font_description_from_string("Purisa 60");	
-	gtk_widget_modify_font(GTK_WIDGET(sub_textview),font);
-	gdk_color_parse("#FFFF00",&color);
-	gtk_widget_modify_text(GTK_WIDGET(sub_textview),GTK_STATE_NORMAL,&color);
-	gdk_color_parse("#FFFF00",&color);
-	gtk_widget_modify_base(GTK_WIDGET(sub_textview),GTK_STATE_NORMAL,&color);	
+	
+	
+	GdkRGBA color;
+	gdk_rgba_parse(&color,"#000000");
+	gtk_widget_override_background_color(GTK_WIDGET(textview),GTK_STATE_NORMAL,&color);
+	gdk_rgba_parse(&color,"#FFFFFF");
+	gtk_widget_override_color(GTK_WIDGET(textview),GTK_STATE_NORMAL,&color);
+	
 	
 	//Image
 	image_hand = GTK_WIDGET(gtk_builder_get_object(builder,"image_hand"));
@@ -427,7 +422,8 @@ int main(int argc,char *argv[])
 	//Level Spinn Button
 	spinbutton = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_level"));
 	
-	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Welcome to Angela Open Talking Typer");
+	play("start.ogg");
+	//tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Welcome to Angela-Typing-Tutor");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox),0);
 	
 	set_point_view(ZERO,ZERO);

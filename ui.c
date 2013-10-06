@@ -47,3 +47,33 @@ void about()
 	about_window = GTK_WIDGET(gtk_builder_get_object(about_builder,"window"));
 	gtk_widget_show(about_window);
 }
+
+
+void clear_tag()
+{
+	GtkTextIter iter_1;
+	GtkTextIter iter_2;
+	GtkTextTag *tag;
+	tag = gtk_text_buffer_create_tag(textbuffer,NULL,NULL);
+	g_object_set(tag,"foreground-rgba","#002CFF", NULL);
+	gtk_text_buffer_get_bounds(textbuffer,&iter_1,&iter_2); 
+	gtk_text_buffer_apply_tag(textbuffer,tag,&iter_1,&iter_2);
+	
+}
+
+void set_tag(int start,int end,char* fg_color,char* bg_color)
+{
+	GtkTextTag *tag;
+	GtkTextIter iter_1;
+	GtkTextIter iter_2;
+	
+	tag = gtk_text_buffer_create_tag(textbuffer,NULL,NULL);
+	if (fg_color != NULL)
+		g_object_set(tag,"foreground-rgba",fg_color, NULL);
+	if (bg_color != NULL)
+		g_object_set(tag,"background-rgba",bg_color, NULL);
+	
+	gtk_text_buffer_get_iter_at_offset(textbuffer,&iter_1,start);
+	gtk_text_buffer_get_iter_at_offset(textbuffer,&iter_2,end);
+	gtk_text_buffer_apply_tag(textbuffer,tag,&iter_1,&iter_2);
+}
