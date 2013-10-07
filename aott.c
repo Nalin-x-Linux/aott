@@ -51,11 +51,12 @@ int wpm;
 int total_errors;
 float efficiency;
 
+
 //TTS Voice 
 gchar *voice;
 
 struct lesson_def lessons[100];
-
+int ending_lesson;
 
 gchar *correct;
 int lesson;
@@ -152,7 +153,8 @@ void load(gchar language_file[])
 		fscanf(fp,"%d %d %d-%d",&lessons[i].type,
 		&lessons[i].win_point,&lessons[i].from,&lessons[i].to);
 		fgets(temp,200,fp);
-		strcpy(lessons[i].instruction,g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));}		
+		strcpy(lessons[i].instruction,g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
+		ending_lesson = i;}		
 	fclose(fp);
 }
 
@@ -238,7 +240,8 @@ void key_release_event()
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
 				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 				word_count,wpm,total_errors,time_taken,(int)efficiency);							
-			jump_to_next_or_previous_lesson(NULL,+1);
+			if (lesson+1 < ending_lesson)
+				jump_to_next_or_previous_lesson(NULL,+1);
 			}
 		else{
 			set_point_view(SKIP,point);
