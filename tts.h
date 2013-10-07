@@ -15,6 +15,7 @@ gcc -Wall -o speak speak.c -lespeak -I/usr/include/espeak/
 
 
 void tts_init();
+int tts_playing();
 void tts_set_voice(char voice_name[]);
 void tts_set_volume(int volume);
 void tts_set_rate(int rate);

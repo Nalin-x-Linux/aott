@@ -23,15 +23,16 @@ void *tts_thread_func(void *arg)
         if (interrupt != INTERRUPT) 
         { 
                 while (espeak_IsPlaying()) 
-                { 
-                        fprintf(stderr,"\nAlive"); 
-                } 
+                { } 
         } 
 	espeak_Synchronize();
 	return NULL;
 }
 
-
+int tts_playing()
+{
+	return espeak_IsPlaying();
+}
 //This function should be called at begining 
 void tts_init()
 {
