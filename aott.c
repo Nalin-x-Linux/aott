@@ -109,7 +109,7 @@ void play(char* file)
 void play_music()
 {
         gchar temp[200];
-		int random_num = rand()%5;
+		int random_num = rand()%6;
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
         ca_context_cancel(context,-1);
         ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
@@ -193,7 +193,7 @@ void run()
 	iter = 0;
 	if (lessons[lesson].type != LETTERS){
 		clear_tag();
-		set_tag(iter,iter+1,"#FFFFF",NULL);}
+		set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);}
 		
 	set_hand(g_utf8_substring(qustion,iter,iter+1));
 	gdk_threads_leave();
@@ -259,7 +259,7 @@ void key_release_event()
 			play("tock.oga");
 			if (lessons[lesson].type != LETTERS){
 				clear_tag();
-				set_tag(iter,iter+1,"#FFFFF",NULL);	}
+				set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);	}
 			
 			
 			if (lessons[lesson].type == SENTENCE && g_utf8_collate(g_utf8_substring(qustion,iter-1,iter)," ") == 0)	{
@@ -309,6 +309,10 @@ void key_release_event()
 	}
 }
 
+void hear_instruction(){
+	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",lessons[lesson].instruction);
+	}
+
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 {
 	point = 0;
@@ -319,16 +323,10 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 	lesson = gtk_spin_button_get_value_as_int(spinbutton);
 	lesson += count;
 	gtk_spin_button_set_value(spinbutton,lesson);
-	//speak(lessons[lesson].instruction,0,0);
+	hear_instruction();
 	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
 	//To Pass information that which function is called run()
 	iter = 100;
-	if (lessons[lesson].type == LETTERS){
-		//gtk_widget_hide(GTK_WIDGET(sub_textview));
-		}
-	else{
-		//gtk_widget_show(GTK_WIDGET(sub_textview));
-		}
 	set_point_view(lessons[lesson].win_point,ZERO);
 	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
 	run();
@@ -340,10 +338,6 @@ void activate()
 {
 	play("1.ogg");
 } 
-
-void hear_instruction(){
-	//speak(lessons[lesson].instruction,1,0);
-	}
 
 void set_language()
 {	
@@ -428,14 +422,14 @@ int main(int argc,char *argv[])
 	GtkTextView* textview = GTK_TEXT_VIEW(gtk_builder_get_object(builder,"textview"));
 	textbuffer = GTK_TEXT_BUFFER(gtk_builder_get_object(builder,"textbuffer"));
 	gtk_text_buffer_set_text(textbuffer,"Welcome",-1);
-	PangoFontDescription *font =  pango_font_description_from_string("Sans Bold 60");	
+	PangoFontDescription *font =  pango_font_description_from_string("Georgia Bold 60");	
 	gtk_widget_modify_font(GTK_WIDGET(textview),font);
 	
 	
 	GdkRGBA color;
-	gdk_rgba_parse(&color,"#000000");
+	gdk_rgba_parse(&color,BG_COLOR);
 	gtk_widget_override_background_color(GTK_WIDGET(textview),GTK_STATE_NORMAL,&color);
-	gdk_rgba_parse(&color,"#FFFFFF");
+	gdk_rgba_parse(&color,FG_COLOR);
 	gtk_widget_override_color(GTK_WIDGET(textview),GTK_STATE_NORMAL,&color);
 	
 	
