@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+void set_tag(int start,int end,char* fg_color,char* bg_color);
+
 void *reset_face()
 {
 	sleep(2);
