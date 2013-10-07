@@ -259,7 +259,7 @@ void key_release_event()
 			correct=strdup(out);
 			iter++;
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
-			play("tock.oga");
+			play("tock.ogg");
 			if (lessons[lesson].type != LETTERS){
 				clear_tag();
 				set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);	}
