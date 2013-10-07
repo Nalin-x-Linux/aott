@@ -67,11 +67,11 @@ void clear_tag()
 {
 	GtkTextIter iter_1;
 	GtkTextIter iter_2;
-	GtkTextTag *tag;
-	tag = gtk_text_buffer_create_tag(textbuffer,NULL,NULL);
-	g_object_set(tag,"foreground-rgba","#FFFFFF", NULL);
-	gtk_text_buffer_get_bounds(textbuffer,&iter_1,&iter_2); 
-	gtk_text_buffer_apply_tag(textbuffer,tag,&iter_1,&iter_2);
+	int start,end;
+	gtk_text_buffer_get_bounds(textbuffer,&iter_1,&iter_2);
+	start = gtk_text_iter_get_offset(&iter_1);
+	end = gtk_text_iter_get_offset(&iter_2);
+	set_tag(start,end,FG_COLOR,BG_COLOR);
 	
 }
 

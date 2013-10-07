@@ -9,6 +9,12 @@
 //Data Directory
 #define directory "usr/share/angela-typing-tutor/"
 
+
+#define FG_COLOR "#FFFFFF"
+#define BG_COLOR "#000000"
+#define HIGHLIGHT_FG_COLOR "#FCFF00"
+#define HIGHLIGHT_BG_COLOR "#000000"
+
 //Point
 #define SKIP -10
 #define ZERO 0
