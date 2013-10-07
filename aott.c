@@ -22,7 +22,7 @@ gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags 
 #include <dirent.h> 
 #include "tts.h"
 #include "aott.h"
-//#include "ui.h"
+#include "ui.h"
 
 gchar word[100][50];
 gchar sentence[100][100];
@@ -36,9 +36,6 @@ struct lesson_def
 	int to;
 	gchar instruction[200];
 };
-
-//Canberra sound context
-ca_context* context=NULL;
 
 //Time Varibles
 long int time_qustion;
@@ -103,7 +100,7 @@ void play(char* file)
 	gchar* temp = malloc(200);
 	sprintf(temp,"%ssounds/%s",directory,file);
 	ca_context_cancel(context,-1);
-	ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
+	ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
 }
 
 
@@ -113,7 +110,7 @@ void play_music()
 		int random_num = rand()%6;
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
         ca_context_cancel(context,-1);
-        ca_context_play(context,0,CA_PROP_MEDIA_FILENAME,temp,NULL);
+        ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
 
 
 }
@@ -240,6 +237,16 @@ void key_release_event()
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
 				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 				word_count,wpm,total_errors,time_taken,(int)efficiency);							
+			int playing1 = 1;
+			int playing2 = 1;
+			while(1)
+			{
+				playing2 = espeak_IsPlaying();
+				ca_context_playing(context,SOUND_ID,&playing1);
+				if (playing1 == 0 && playing2 == 0)
+					break;
+			}
+			
 			if (lesson+1 < ending_lesson)
 				jump_to_next_or_previous_lesson(NULL,+1);
 			}
@@ -314,6 +321,8 @@ void key_release_event()
 
 void hear_instruction(){
 	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",lessons[lesson].instruction);
+	while(tts_playing())
+	{}
 	}
 
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
@@ -409,7 +418,7 @@ int main(int argc,char *argv[])
 
 	//About Button
 	GtkWidget* button_about = GTK_WIDGET(gtk_builder_get_object(builder,"about_button"));
-	//g_signal_connect(G_OBJECT(button_about),"clicked",G_CALLBACK(about),NULL);
+	g_signal_connect(G_OBJECT(button_about),"clicked",G_CALLBACK(about),NULL);
 
 	//Quit Button
 	GtkWidget*button_quit = GTK_WIDGET(gtk_builder_get_object(builder,"button_quit"));
