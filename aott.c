@@ -80,7 +80,7 @@ void run();
 
 
 
-
+/*
 void *rotate()
 {
 	int angle = gtk_label_get_angle(instruction_label);
@@ -92,6 +92,7 @@ void *rotate()
 	}
 return NULL;
 }
+*/
 
 
 
@@ -180,7 +181,7 @@ gchar* random_qustion_generator()
 void run()
 {
 	correct = "";
-	gdk_threads_enter ();
+	//gdk_threads_enter ();
 	gtk_widget_grab_focus(GTK_WIDGET(entry));
 	qustion = random_qustion_generator();
 	g_print("%s",qustion);
@@ -195,7 +196,7 @@ void run()
 		set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);}
 		
 	set_hand(g_utf8_substring(qustion,iter,iter+1));
-	gdk_threads_leave();
+	//gdk_threads_leave();
 	time(&time_qustion);
 }
 

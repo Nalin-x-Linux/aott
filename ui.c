@@ -18,7 +18,7 @@ void set_face(gchar* emotion)
 	char file[100];
 	sprintf(file,"%sfaces/%s.png",directory,emotion);
 	gtk_image_set_from_file(GTK_IMAGE(face_image),file);
-	g_thread_create(&reset_face,NULL,FALSE,NULL);
+	g_thread_new("set_face",&reset_face,NULL);
 }
 
 void set_hand(gchar* key)

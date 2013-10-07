@@ -92,5 +92,5 @@ void tts_say(int rate,int pitch,int interrupt, const char* text, ...){
 	espeak_Synth(out, Size, 0, position_type, 0,	espeakCHARS_AUTO,0, NULL);
 	fprintf(stderr,"\nTTS_Say : %s\n",out);
 	interrupt_address = &interrupt;
-	g_thread_create(&tts_thread_func,interrupt_address,TRUE,NULL);
+	g_thread_new("tts",&tts_thread_func,interrupt_address);
 }	
