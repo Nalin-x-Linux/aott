@@ -4,62 +4,181 @@ s 2
 d 3
 f 4
 g 4
-; 0
+; 10
 l 9
 k 8
 j 7
 h 7
+t 4
+y 7
 q 1
 w 2
 e 3
 r 4
-t 4
-p 0
+p 10
 o 9
 i 8
 u 7
 y 7
-z 1
-x 2
-c 3
-v 4
-b 4
-/ 0
-. 9
-, 8
-m 7
+. 10
+, 9
+m 8
 n 7
+b 7
+z 2
+x 3
+c 4
+v 4
 1 1
 2 2
 3 3
 4 4
 5 4
-0 0
+0 10
 9 9
 8 8
 7 7
 6 7
-a 1
 A 1
-s 2
 S 2
-d 3
 D 3
-f 4
 F 4
-g 4
 G 4
-; 0
-: 0
-l 9
+; 10
 L 9
+k 8
+J 7
+H 7
+Q 1
+W 2
+E 3
+R 4
+T 4
+P 10
+O 9
+I 8
+U 7
+Y 7
+Z 2
+X 3
+C 4
+V 4
+M 8
+N 7
+B 7
+! 1
+@ 2
+# 3
+$ 4
+% 4
+) 10
+( 9
+* 8
+& 7
+^ 7
 ~ ~
+asd
+aah
+aha
+ahas
+aka
+all
+alga
+algal
+alas
+ass
+ask
+asks
 add
-sad
-lass
+adj
+adds
+ads
+ash
+faff
+faffs
+fag
+fags
+fall
+flag
+flak
+flags
+flaks
+falls
+flask
+flasks
+flash
+fad
+fads
+hag
+haj
+hajj
+hags
+hall
+half
+halal
+halals
+halls
+has
+had
+hash
+gaff
+gaffs
+gag
+gaga
+jag
+gags
+jags
+gal
+gala
+gall
+galas
+galls
+gals
 glass
+glad
+glads
+gas
+gad
+gads
+gash
+lag
+lags
+lass
+lad
+lads
+lash
+sag
+saga
+ska
+sagas
+sags
+slag
+slags
+salsa
+salsas
+salad
+salads
+slash
+sass
+sad
+sash
+dag
+dags
+dds
+dad
+dads
+dash
+shah
+ssh
+shh
+shag
+shags
+shall
+shahs
+shad
+shads
 ~ ~
 dad add sad
 ~ ~
-0 5 1-4 let us try letters 
-0 6 32-42 let us try numbers
+0 14 3 asdf asdf welcome to lettes
+1 4 5 asdf a welcome to new framework

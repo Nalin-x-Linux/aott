@@ -25,8 +25,8 @@
 #define SOUND_ID 10
 ca_context* context;
 
-gchar value[100][10];
-gchar letter[100][10];
+gchar value[100][100];
+gchar letter[100][100];
 
 GtkWidget * image_hand;
 GtkWidget * image_current_point_1;

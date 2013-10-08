@@ -24,7 +24,7 @@ gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags 
 #include "aott.h"
 #include "ui.h"
 
-gchar word[100][50];
+gchar word[100][100];
 gchar sentence[100][100];
 
 //Lesson Struct
@@ -32,8 +32,9 @@ struct lesson_def
 {
 	int type;
 	int win_point;
-	int from;
-	int to;
+	int time;
+	gchar allowed_letters[100];
+	gchar target_leters[100];
 	gchar instruction[200];
 };
 
@@ -61,6 +62,9 @@ int iter;
 
 //Qustion
 gchar *qustion;
+int max_qustions;
+gchar qustion_list[100][100];
+
 
 //Gtk
 GtkSpinButton *spinbutton;
@@ -73,7 +77,6 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count);
 void key_release_event();
 void set_point_view(int win, int current);
 void load(gchar language[]);
-gchar* random_qustion_generator();
 void set_hand(gchar* key);
 void run();
 
@@ -148,42 +151,75 @@ void load(gchar language_file[])
 		if (strcmp(sentence[i],"~ ~")==0){
 			break;}}
 	for(i=0;!feof(fp) && fp != NULL;i++){
-		fscanf(fp,"%d %d %d-%d",&lessons[i].type,
-		&lessons[i].win_point,&lessons[i].from,&lessons[i].to);
+		fscanf(fp,"%d %d %d %s %s",&lessons[i].type,
+		&lessons[i].win_point,&lessons[i].time,lessons[i].allowed_letters,lessons[i].target_leters);
 		fgets(temp,200,fp);
 		strcpy(lessons[i].instruction,g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
 		ending_lesson = i;}		
 	fclose(fp);
 }
 
-
-
-gchar* random_qustion_generator()
+void make_list_from_list(gchar list[][100])
 {
-	srand(time_qustion);
-	int number = rand();
-	srand(number*329);
-	number %= lessons[lesson].from-lessons[lesson].to;
-	number += lessons[lesson].from;
-	if (lessons[lesson].type == LETTERS)
-		return (gchar*)letter[number];
-	else if (lessons[lesson].type == WORDS)
-		return (gchar*)word[number];
-	else if(lessons[lesson].type == SENTENCE)
-		return (gchar*)sentence[number];
-	else
-		return NULL;
+	int i=1;
+	int j,k,switch_1,switch_2,temp_switch;
+	max_qustions = 0;
+	do
+	{
+		g_print("\nFFFFFFFFF %s ",list[i]);
+		i++;
+		
+		switch_1 = 1; switch_2 = 0;
+		for(j=0;j<g_utf8_strlen(list[i],-1);j++)
+		{
+			
+			//Checking allowed
+			temp_switch = 0;
+			for(k=0;k<g_utf8_strlen(lessons[lesson].allowed_letters,-1);k++)
+			{
+				if(list[i][j] == lessons[lesson].allowed_letters[k])
+				{
+					temp_switch = 1;
+				}
+			}
+			
+			if(temp_switch == 0)
+				switch_1 = 0;
+			
+			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
+			{
+				if(list[i][j] == lessons[lesson].target_leters[k])
+					switch_2 = 1;
+			}
+		}
+		
+		
+		if(switch_1 && switch_2)
+		{
+			g_utf8_strncpy(qustion_list[max_qustions],list[i],g_utf8_strlen(list[i],-1));
+			g_print("\n>>>>>>>>>>>>>>> %s <<<<<<<<<<<<<<<< ",list[i]);
+			max_qustions++;
+		}
+	}
+	while(i < 20);
 }
-
-
 
 
 void run()
 {
+	int number = rand();
 	correct = "";
 	//gdk_threads_enter ();
 	gtk_widget_grab_focus(GTK_WIDGET(entry));
-	qustion = random_qustion_generator();
+	
+	//geting a random qustion from list
+	srand(time_qustion);
+	srand(number*329);
+	number %= max_qustions;
+	g_utf8_strncpy(qustion,qustion_list[number],g_utf8_strlen(qustion_list[number],-1));
+	
+	
+	
 	g_print("%s",qustion);
 	gtk_text_buffer_set_text(textbuffer,qustion,-1);
 	if (iter != 100)
@@ -238,7 +274,8 @@ void key_release_event()
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
 				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 				word_count,wpm,total_errors,time_taken,(int)efficiency);							
-			int playing1 = 1;
+			
+			/*int playing1 = 1;
 			int playing2 = 1;
 			while(1)
 			{
@@ -247,6 +284,7 @@ void key_release_event()
 				if (playing1 == 0 && playing2 == 0)
 					break;
 			}
+			*/
 			
 			if (lesson+1 < ending_lesson)
 				jump_to_next_or_previous_lesson(NULL,+1);
@@ -322,20 +360,28 @@ void key_release_event()
 
 void hear_instruction(){
 	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",lessons[lesson].instruction);
-	while(tts_playing())
-	{}
+	//while(tts_playing())
+	//{}
 	}
 
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 {
 	point = 0;
 	word_count = 0;
-	total_errors = 0;
-	
+	total_errors = 0;	
 	time_lesson_start = time(0);
 	lesson = gtk_spin_button_get_value_as_int(spinbutton);
 	lesson += count;
 	gtk_spin_button_set_value(spinbutton,lesson);
+	
+	//generating qustion list
+	if (lessons[lesson].type == LETTERS)
+		make_list_from_list(letter);
+	else if (lessons[lesson].type == WORDS)
+		make_list_from_list(word);
+	else if(lessons[lesson].type == SENTENCE)
+		make_list_from_list(sentence);	
+	
 	hear_instruction();
 	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
 	//To Pass information that which function is called run()
