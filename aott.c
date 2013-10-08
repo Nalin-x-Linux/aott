@@ -161,14 +161,12 @@ void load(gchar language_file[])
 
 void make_list_from_list(gchar list[][100])
 {
-	int i=1;
+	int i=0;
 	int j,k,switch_1,switch_2,temp_switch;
 	max_qustions = 0;
 	do
 	{
-		g_print("\nFFFFFFFFF %s ",list[i]);
-		i++;
-		
+		g_print("\nChecking  %s ",list[i]);
 		switch_1 = 1; switch_2 = 0;
 		for(j=0;j<g_utf8_strlen(list[i],-1);j++)
 		{
@@ -186,6 +184,7 @@ void make_list_from_list(gchar list[][100])
 			if(temp_switch == 0)
 				switch_1 = 0;
 			
+			//Checking 
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
 				if(list[i][j] == lessons[lesson].target_leters[k])
@@ -197,9 +196,10 @@ void make_list_from_list(gchar list[][100])
 		if(switch_1 && switch_2)
 		{
 			g_utf8_strncpy(qustion_list[max_qustions],list[i],g_utf8_strlen(list[i],-1));
-			g_print("\n>>>>>>>>>>>>>>> %s <<<<<<<<<<<<<<<< ",list[i]);
+			g_print("\nGot %s ",list[i]);
 			max_qustions++;
 		}
+		i++;
 	}
 	while(i < 20);
 }
