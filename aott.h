@@ -8,6 +8,12 @@
 #define WORDS 1
 #define SENTENCE 2
 
+//Array size
+#define MAX_LETTERS 1000
+#define MAX_WORDS 200000
+#define MAX_SENTENCE 10000
+#define MAX_LENGTH 100
+
 //Data Directory
 #define directory "usr/share/angela-typing-tutor/"
 
@@ -25,8 +31,13 @@
 #define SOUND_ID 10
 ca_context* context;
 
-gchar value[100][100];
-gchar letter[100][100];
+//Global Arrays
+gchar value[MAX_LETTERS][MAX_LENGTH];
+gchar letter[MAX_LETTERS][MAX_LENGTH];
+gchar word[MAX_WORDS][MAX_LENGTH];
+gchar sentence[MAX_SENTENCE][MAX_LENGTH];
+gchar qustion_list[MAX_WORDS][MAX_LENGTH];
+
 
 GtkWidget * image_hand;
 GtkWidget * image_current_point_1;

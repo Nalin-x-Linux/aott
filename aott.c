@@ -24,8 +24,7 @@ gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags 
 #include "aott.h"
 #include "ui.h"
 
-gchar word[100][100];
-gchar sentence[100][100];
+
 
 //Lesson Struct
 struct lesson_def
@@ -33,8 +32,8 @@ struct lesson_def
 	int type;
 	int win_point;
 	int time;
-	gchar allowed_letters[100];
-	gchar target_leters[100];
+	gchar allowed_letters[MAX_LENGTH];
+	gchar target_leters[MAX_LENGTH];
 	gchar instruction[200];
 };
 
@@ -63,8 +62,10 @@ int iter;
 //Qustion
 gchar *qustion;
 int max_qustions;
-gchar qustion_list[100][100];
 
+int lesson_letter_count;
+int lesson_word_count;
+int lesson_sentence_count;
 
 //Gtk
 GtkSpinButton *spinbutton;
@@ -137,19 +138,22 @@ void load(gchar language_file[])
 	for(i=0;;i++){
 		fscanf(fp,"%s %s\n",letter[i],value[i]);
 		if (strcmp(letter[i],"~")==0){
-			break;}}
+			break;}
+		lesson_letter_count = i;}
 			
 	for(i=0;;i++){
 		fscanf(fp,"%s",word[i]);
 		if (strcmp(word[i],"~")==0){
 			fgetc(fp);fgetc(fp);
-			break;}	}
+			break;}
+			lesson_word_count = i;}
 	for(i=0;;i++){
 		fgets(temp,100,fp);
 		strcpy(sentence[i],g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
 		g_print("\nWord - ##%s##",sentence[i]);
 		if (strcmp(sentence[i],"~ ~")==0){
-			break;}}
+			break;}
+			lesson_sentence_count = i;}
 	for(i=0;!feof(fp) && fp != NULL;i++){
 		fscanf(fp,"%d %d %d %s %s",&lessons[i].type,
 		&lessons[i].win_point,&lessons[i].time,lessons[i].allowed_letters,lessons[i].target_leters);
@@ -159,7 +163,7 @@ void load(gchar language_file[])
 	fclose(fp);
 }
 
-void make_list_from_list(gchar list[][100])
+void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 {
 	int i=0;
 	int j,k,switch_1,switch_2,temp_switch;
@@ -184,7 +188,7 @@ void make_list_from_list(gchar list[][100])
 			if(temp_switch == 0)
 				switch_1 = 0;
 			
-			//Checking 
+			//Checking for at least one target letter
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
 				if(list[i][j] == lessons[lesson].target_leters[k])
@@ -201,7 +205,7 @@ void make_list_from_list(gchar list[][100])
 		}
 		i++;
 	}
-	while(i < 20);
+	while(i < size);
 }
 
 
@@ -218,15 +222,12 @@ void run()
 	number %= max_qustions;
 	g_utf8_strncpy(qustion,qustion_list[number],g_utf8_strlen(qustion_list[number],-1));
 	
-	
-	
+	//setting the qustion
 	g_print("%s",qustion);
 	gtk_text_buffer_set_text(textbuffer,qustion,-1);
-	if (iter != 100)
-		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
-	else
-		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,APPEND,"%s",qustion);
-	iter = 0;
+	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
+
+	//Highlighting the letter
 	if (lessons[lesson].type != LETTERS){
 		clear_tag();
 		set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);}
@@ -247,18 +248,19 @@ void key_release_event()
 		correct = "";
 		time_taken = difftime(time(0),time_qustion);
 		g_print ( "\nAnswer time = %d\n",time_taken);
-		if (time_taken <= 4){
+		if (time_taken <= lessons[lesson].time){
 			play("excellent.ogg");
 			set_face("hard_smile");}
-		else if(time_taken <= 8){
+		else if(time_taken <= lessons[lesson].time+(lessons[lesson].time/2)){
 			play("very_good.ogg");
 			set_face("laugh");}
-		else if (time_taken <= 12){
+		else if (time_taken <= lessons[lesson].time*2){
 			play("good.ogg");
 			set_face("wink");}
-		else if(time_taken <= 16){
+		else if(time_taken <= (lessons[lesson].time*2)+(lessons[lesson].time/2)){
 			play("grading_ok.ogg");
-			set_face("uncertain");}				
+			set_face("uncertain");
+			point--;}		
 		else{
 			play("try_more_fast.ogg");
 			set_face("sad");
@@ -267,27 +269,30 @@ void key_release_event()
 		if ( point == lessons[lesson].win_point){
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
-			play_music();
+			play("win.ogg");
 			wpm = (60 / time_taken) * word_count;
 			efficiency = lessons[lesson].win_point/word_count*100;
 			efficiency -= total_errors;			
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
 				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 				word_count,wpm,total_errors,time_taken,(int)efficiency);							
-			
-			/*int playing1 = 1;
+			int playing1 = 1;
 			int playing2 = 1;
 			while(1)
 			{
+				sleep(1);
 				playing2 = espeak_IsPlaying();
 				ca_context_playing(context,SOUND_ID,&playing1);
 				if (playing1 == 0 && playing2 == 0)
 					break;
+				g_print("playing ");
 			}
-			*/
 			
-			if (lesson+1 < ending_lesson)
-				jump_to_next_or_previous_lesson(NULL,+1);
+			
+			
+			if (lesson+1 < ending_lesson){
+				play_music();
+				jump_to_next_or_previous_lesson(NULL,+1);}
 			}
 		else{
 			set_point_view(SKIP,point);
@@ -305,7 +310,7 @@ void key_release_event()
 			correct=strdup(out);
 			iter++;
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
-			play("tock.ogg");
+			play("type.ogg");
 			if (lessons[lesson].type != LETTERS){
 				clear_tag();
 				set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);	}
@@ -319,6 +324,7 @@ void key_release_event()
 		else
 		{
 			//Wrong pressed
+			play("no1.ogg");
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
 			total_errors += 1;
@@ -376,11 +382,11 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 	
 	//generating qustion list
 	if (lessons[lesson].type == LETTERS)
-		make_list_from_list(letter);
+		make_list_from_list(letter,lesson_letter_count);
 	else if (lessons[lesson].type == WORDS)
-		make_list_from_list(word);
+		make_list_from_list(word,lesson_word_count);
 	else if(lessons[lesson].type == SENTENCE)
-		make_list_from_list(sentence);	
+		make_list_from_list(sentence,lesson_sentence_count);	
 	
 	hear_instruction();
 	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
