@@ -180,7 +180,8 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			temp_switch = 0;
 			for(k=0;k<g_utf8_strlen(lessons[lesson].allowed_letters,-1);k++)
 			{
-				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0)
+				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0	
+				 ||strcmp(g_utf8_substring(list[i],j,j+1)," ") == 0)
 				{
 					temp_switch = 1;
 				}
