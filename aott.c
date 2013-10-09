@@ -192,7 +192,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			//Checking for at least one target letter
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
-				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0)
+				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].target_leters,k,k+1)) == 0)
 					switch_2 = 1;
 			}
 		}
@@ -206,7 +206,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 		}
 		i++;
 	}
-	while(i < size);
+	while(i <= size);
 }
 
 
