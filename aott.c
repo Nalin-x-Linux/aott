@@ -170,7 +170,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 	max_qustions = 0;
 	do
 	{
-		g_print("\nChecking  %s ",list[i]);
+		//g_print("\nChecking  %s ",list[i]);
 		switch_1 = 1; switch_2 = 0;
 		for(j=0;j<g_utf8_strlen(list[i],-1);j++)
 		{
@@ -179,7 +179,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			temp_switch = 0;
 			for(k=0;k<g_utf8_strlen(lessons[lesson].allowed_letters,-1);k++)
 			{
-				if(list[i][j] == lessons[lesson].allowed_letters[k])
+				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0)
 				{
 					temp_switch = 1;
 				}
@@ -191,7 +191,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			//Checking for at least one target letter
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
-				if(list[i][j] == lessons[lesson].target_leters[k])
+				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0)
 					switch_2 = 1;
 			}
 		}
