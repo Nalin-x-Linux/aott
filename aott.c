@@ -227,6 +227,9 @@ void run()
 	gtk_text_buffer_set_text(textbuffer,qustion,-1);
 	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
 
+	//Resetting iter
+	iter = 0;
+	
 	//Highlighting the letter
 	if (lessons[lesson].type != LETTERS){
 		clear_tag();
@@ -365,9 +368,18 @@ void key_release_event()
 }
 
 void hear_instruction(){
+	int playing1 = 1;
+	while(1)
+	{	
+		ca_context_playing(context,SOUND_ID,&playing1);
+		if (playing1 == 0)
+			break;
+		sleep(1);
+	}
+	
 	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",lessons[lesson].instruction);
-	//while(tts_playing())
-	//{}
+	while(tts_playing())
+	{ sleep(1);}
 	}
 
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
