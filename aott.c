@@ -79,6 +79,7 @@ void key_release_event();
 void set_point_view(int win, int current);
 void load(gchar language[]);
 void set_hand(gchar* key);
+gchar *get_slited_letters(gchar string[]); 
 void run();
 
 
@@ -225,7 +226,6 @@ void run()
 	//setting the qustion
 	g_print("%s",qustion);
 	gtk_text_buffer_set_text(textbuffer,qustion,-1);
-	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
 
 	//Resetting iter
 	iter = 0;
@@ -234,10 +234,53 @@ void run()
 	if (lessons[lesson].type != LETTERS){
 		clear_tag();
 		set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);}
+	
+	if (lessons[lesson].type == WORDS)
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s, %s",qustion,get_slited_letters(qustion));
+	else if(lessons[lesson].type == SENTENCE)
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
+	else
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(qustion));
 		
 	set_hand(g_utf8_substring(qustion,iter,iter+1));
 	//gdk_threads_leave();
 	time(&time_qustion);
+}
+gchar *get_slited_letters(gchar string[])
+{
+	gchar *temp;
+	temp = malloc(1000);
+	temp[0] = '\0';
+	int j=0;
+	while(1)
+	{
+		if (g_utf8_collate(g_utf8_substring(string,j,j+1),"\0") == 0)
+			break;
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1)," ") == 0 ){
+			g_strlcat(temp,"space",100);
+			break;}
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),",") == 0)
+			g_strlcat(temp,"comma",100);
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),".") == 0)
+			g_strlcat(temp,"full stop",100);
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"\'") == 0)
+			g_strlcat(temp,"apostophe",100);
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),";") == 0)
+			g_strlcat(temp,"semicolon",100);
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),":") == 0)
+			g_strlcat(temp,"colon",100);
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"?") == 0)
+			g_strlcat(temp,"Qustion mark",100);
+		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"-") == 0)
+			g_strlcat(temp,"Hyphen",100);
+		else
+			g_strlcat(temp,g_utf8_substring(string,j,j+1),100);
+			
+		g_strlcat(temp,". ",100);
+		j++;
+	}
+	return temp;
+	
 }
 
 
@@ -331,38 +374,7 @@ void key_release_event()
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
 			total_errors += 1;
-			gchar temp[1000];
-			int j = iter;
-			temp[0] = '\0';
-			while(1)
-			{
-				if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"\0") == 0)
-					break;
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1)," ") == 0 ){
-					g_strlcat(temp,"space",100);
-					break;}
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),",") == 0)
-					g_strlcat(temp,"comma",100);
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),".") == 0)
-					g_strlcat(temp,"full stop",100);
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"\'") == 0)
-					g_strlcat(temp,"apostophe",100);
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),";") == 0)
-					g_strlcat(temp,"semicolon",100);
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),":") == 0)
-					g_strlcat(temp,"colon",100);
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"?") == 0)
-					g_strlcat(temp,"Qustion mark",100);
-				else if (g_utf8_collate(g_utf8_substring(qustion,j,j+1),"-") == 0)
-					g_strlcat(temp,"Hyphen",100);
-				else
-				{
-					g_strlcat(temp,g_utf8_substring(qustion,j,j+1),100);
-					g_strlcat(temp,". ",100);
-				}
-				j++;
-			}
-			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",temp);
+			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(g_utf8_substring(qustion,iter,g_utf8_strlen(qustion,-1))));
 		}
 	}
 }
