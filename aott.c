@@ -137,23 +137,26 @@ void load(gchar language_file[])
 	tts_set_voice(voice);
 	
 	for(i=0;;i++){
-		fscanf(fp,"%s %s\n",letter[i],value[i]);
-		if (strcmp(letter[i],"~")==0){
-			break;}
+		fscanf(fp,"%s",letter[i]);
+		if (strcmp(letter[i],"====")==0)
+			break;
+		else
+			fscanf(fp," %s\n",value[i]);
 		lesson_letter_count = i;}
 			
 	for(i=0;;i++){
 		fscanf(fp,"%s",word[i]);
-		if (strcmp(word[i],"~")==0){
+		if (strcmp(word[i],"====")==0){
 			fgetc(fp);fgetc(fp);
 			break;}
 			lesson_word_count = i;}
 	for(i=0;;i++){
 		fgets(temp,100,fp);
 		strcpy(sentence[i],g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
-		if (strcmp(sentence[i],"~ ~")==0){
+		if (strcmp(sentence[i],"====")==0){
 			break;}
 			lesson_sentence_count = i;}
+			
 	for(i=0;!feof(fp) && fp != NULL;i++){
 		fscanf(fp,"%d %d %d %s %s",&lessons[i].type,
 		&lessons[i].win_point,&lessons[i].time,lessons[i].allowed_letters,lessons[i].target_leters);
