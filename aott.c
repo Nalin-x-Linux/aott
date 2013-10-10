@@ -34,7 +34,7 @@ struct lesson_def
 	int time;
 	gchar allowed_letters[MAX_LENGTH];
 	gchar target_leters[MAX_LENGTH];
-	gchar instruction[200];
+	gchar instruction[500];
 };
 
 //Time Varibles
@@ -123,7 +123,7 @@ void play_music()
 
 void load(gchar language_file[])
 {
-	int i;gchar* temp = malloc(200);	
+	int i;gchar* temp = malloc(500);	
 		
 	//Opening File
 	FILE *fp;
@@ -151,16 +151,16 @@ void load(gchar language_file[])
 	for(i=0;;i++){
 		fgets(temp,100,fp);
 		strcpy(sentence[i],g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
-		g_print("\nWord - ##%s##",sentence[i]);
 		if (strcmp(sentence[i],"~ ~")==0){
 			break;}
 			lesson_sentence_count = i;}
 	for(i=0;!feof(fp) && fp != NULL;i++){
 		fscanf(fp,"%d %d %d %s %s",&lessons[i].type,
 		&lessons[i].win_point,&lessons[i].time,lessons[i].allowed_letters,lessons[i].target_leters);
-		fgets(temp,200,fp);
+		fgets(temp,500,fp);
 		strcpy(lessons[i].instruction,g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
-		ending_lesson = i;}		
+		ending_lesson = i;
+		g_print("\nRead a Lesson %d with allowed : %s\nLesson Target  \t\t     : %s\n",i,lessons[i].allowed_letters,lessons[i].target_leters);}		
 	fclose(fp);
 }
 
@@ -169,6 +169,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 	int i=0;
 	int j,k,switch_1,switch_2,temp_switch;
 	max_qustions = 0;
+	fprintf(stderr,"\nCurrent Lesson Allowed : [%s] Target : [%s]",lessons[lesson].allowed_letters,lessons[lesson].target_leters);
 	do
 	{
 		//g_print("\nChecking  %s ",list[i]);
@@ -247,6 +248,9 @@ void run()
 	//gdk_threads_leave();
 	time(&time_qustion);
 }
+
+
+
 gchar *get_slited_letters(gchar string[])
 {
 	gchar *temp;
@@ -432,6 +436,7 @@ void activate()
 void set_language()
 {	
 	load(gtk_combo_box_text_get_active_text(combobox));
+	gtk_spin_button_set_range(spinbutton,0,ending_lesson-1);
 }
 
 int main(int argc,char *argv[])
