@@ -347,6 +347,9 @@ void key_release_event()
 			if (lesson+1 < ending_lesson){
 				play_music();
 				jump_to_next_or_previous_lesson(NULL,+1);}
+			else{
+				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Congratulations!. You have finished all lessons!."); 				
+			}
 			}
 		else{
 			set_point_view(SKIP,point);
