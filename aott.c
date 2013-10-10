@@ -113,7 +113,7 @@ void play(char* file)
 void play_music()
 {
         gchar temp[200];
-		int random_num = rand()%6;
+		int random_num = rand()%7;
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
         ca_context_cancel(context,-1);
         ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
@@ -312,7 +312,7 @@ void key_release_event()
 			play("good.ogg");
 			set_face("wink");}
 		else if(time_taken <= (lessons[lesson].time*2)+(lessons[lesson].time/2)){
-			play("grading_ok.ogg");
+			play("ok.ogg");
 			set_face("uncertain");
 			point--;}		
 		else{
@@ -323,7 +323,7 @@ void key_release_event()
 		if ( point == lessons[lesson].win_point){
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
-			play("win.ogg");
+			play("clap.ogg");
 			wpm = (60 / time_taken) * word_count;
 			efficiency = lessons[lesson].win_point/word_count*100;
 			efficiency -= total_errors;			
@@ -348,7 +348,7 @@ void key_release_event()
 				play_music();
 				jump_to_next_or_previous_lesson(NULL,+1);}
 			else{
-				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Congratulations!. You have finished all lessons!."); 				
+				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Congratulations! You have finished all lessons!"); 				
 			}
 			}
 		else{
@@ -381,7 +381,7 @@ void key_release_event()
 		else
 		{
 			//Wrong pressed
-			play("no1.ogg");
+			play("wrong_pressed.ogg");
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
 			total_errors += 1;
@@ -432,12 +432,6 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 	run();
 }
 
-
-
-void activate()
-{
-	play("1.ogg");
-} 
 
 void set_language()
 {	
@@ -515,7 +509,6 @@ int main(int argc,char *argv[])
 	
 	//Entry
 	entry = GTK_ENTRY(gtk_builder_get_object(builder,"entry"));
-	g_signal_connect(G_OBJECT(entry),"activate",G_CALLBACK(activate),NULL);	
 	g_signal_connect(G_OBJECT(entry),"key_release_event",G_CALLBACK(key_release_event),NULL);	
 
 
