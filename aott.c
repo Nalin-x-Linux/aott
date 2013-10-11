@@ -365,16 +365,20 @@ void key_release_event()
 			if (lessons[lesson].type == LETTERS)
 			{
 				wpm = ((60*word_count)/time_taken);
-				efficiency = (wpm*100)/150;
-				efficiency -= total_errors;			
+				efficiency = (wpm*100)/AVG_CPM;
+				efficiency -= total_errors;
+				if (efficiency > 100)
+					efficiency = 100;
 				sprintf(result,"Result for administrator %d Characters, %d Characters per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 				word_count,wpm,total_errors,time_taken,(int)efficiency);
 			}
 			else
 			{
 				cpm = ((60*word_count)/time_taken);
-				efficiency = (cpm*100)/30;
-				efficiency -= total_errors;			
+				efficiency = (cpm*100)/AVG_WPM;
+				efficiency -= total_errors;
+				if (efficiency > 100)
+					efficiency = 100;			
 				sprintf(result,"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 					word_count,cpm,total_errors,time_taken,(int)efficiency);
 			}	

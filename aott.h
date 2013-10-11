@@ -27,6 +27,9 @@
 #define SKIP -10
 #define ZERO 0
 
+#define AVG_WPM 30
+#define AVG_CPM 150
+
 //Canberra sound
 #define SOUND_ID 10
 ca_context* context;
