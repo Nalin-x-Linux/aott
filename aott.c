@@ -361,11 +361,11 @@ void key_release_event()
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
 			play("clap.ogg");
-			
+			word_count += 1;
 			if (lessons[lesson].type == LETTERS)
 			{
 				wpm = ((60*word_count)/time_taken);
-				efficiency = (wpm*100)/175;
+				efficiency = (wpm*100)/150;
 				efficiency -= total_errors;			
 				sprintf(result,"Result for administrator %d Characters, %d Characters per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 				word_count,wpm,total_errors,time_taken,(int)efficiency);
@@ -373,7 +373,7 @@ void key_release_event()
 			else
 			{
 				cpm = ((60*word_count)/time_taken);
-				efficiency = (cpm*100)/35;
+				efficiency = (cpm*100)/30;
 				efficiency -= total_errors;			
 				sprintf(result,"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
 					word_count,cpm,total_errors,time_taken,(int)efficiency);
