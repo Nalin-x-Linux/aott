@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Categories=GNOME;GTK;Utility;Accessibility;
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/bin/angela-typing-tutor
+Name=Angela-typing-tutor
+Icon=/usr/share/angela-typing-tutor/ui/icon.png
