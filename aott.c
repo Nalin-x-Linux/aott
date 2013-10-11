@@ -44,10 +44,7 @@ long int time_lesson_start;
 //Mark 
 int point;
 int word_count;
-int wpm;
 int total_errors;
-float efficiency;
-
 
 //TTS Voice 
 gchar *voice;
@@ -214,46 +211,21 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 	while(i <= size);
 }
 
-
-void run()
-{
-	int number = rand();
-	correct = "";
-	//gdk_threads_enter ();
-	gtk_widget_grab_focus(GTK_WIDGET(entry));
+void hear_instruction(){
+	int playing1 = 1;
+	while(1)
+	{	
+		ca_context_playing(context,SOUND_ID,&playing1);
+		if (playing1 == 0)
+			break;
+		sleep(1);
+	}
 	
-	//geting a random qustion from list
-	srand(time_qustion);
-	srand(number*329);
-	number %= max_qustions;
-	g_utf8_strncpy(qustion,qustion_list[number],g_utf8_strlen(qustion_list[number],-1));
-	
-	//setting the qustion
-	g_print("%s",qustion);
-	gtk_text_buffer_set_text(textbuffer,qustion,-1);
-
-	//Resetting iter
-	iter = 0;
-	
-	//Highlighting the letter
-	if (lessons[lesson].type != LETTERS){
-		clear_tag();
-		set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);}
-	
-	if (lessons[lesson].type == WORDS)
-		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s, %s",qustion,get_slited_letters(qustion));
-	else if(lessons[lesson].type == SENTENCE)
-		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
-	else
-		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(qustion));
-		
-	set_hand(g_utf8_substring(qustion,iter,iter+1));
-	//gdk_threads_leave();
-	time(&time_qustion);
+	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",lessons[lesson].instruction);
+	while(tts_playing())
+	{ sleep(1);}
 }
-
-
-
+	
 gchar *get_slited_letters(gchar string[])
 {
 	gchar *temp;
@@ -291,10 +263,75 @@ gchar *get_slited_letters(gchar string[])
 	
 }
 
+void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
+{
+	point = 0;
+	word_count = 0;
+	total_errors = 0;	
+	time_lesson_start = time(0);
+	lesson = gtk_spin_button_get_value_as_int(spinbutton);
+	lesson += count;
+	gtk_spin_button_set_value(spinbutton,lesson);
+	
+	//generating qustion list
+	if (lessons[lesson].type == LETTERS)
+		make_list_from_list(letter,lesson_letter_count);
+	else if (lessons[lesson].type == WORDS)
+		make_list_from_list(word,lesson_word_count);
+	else if(lessons[lesson].type == SENTENCE)
+		make_list_from_list(sentence,lesson_sentence_count);	
+	
+	hear_instruction();
+	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
+	//To Pass information that which function is called run()
+	iter = 100;
+	set_point_view(lessons[lesson].win_point,ZERO);
+	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
+	run();
+}
+
+void run()
+{
+	int number = rand();
+	correct = "";
+	//gdk_threads_enter ();
+	gtk_widget_grab_focus(GTK_WIDGET(entry));
+	
+	//geting a random qustion from list
+	srand(time_qustion);
+	srand(number*329);
+	number %= max_qustions;
+	g_utf8_strncpy(qustion,qustion_list[number],g_utf8_strlen(qustion_list[number],-1));
+	
+	//setting the qustion
+	g_print("%s",qustion);
+	gtk_text_buffer_set_text(textbuffer,qustion,-1);
+
+	//Resetting iter
+	iter = 0;
+	
+	//Highlighting the letter
+	if (lessons[lesson].type != LETTERS){
+		clear_tag();
+		set_tag(iter,iter+1,HIGHLIGHT_FG_COLOR,HIGHLIGHT_BG_COLOR);}
+	
+	if (lessons[lesson].type == WORDS)
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s, %s",qustion,get_slited_letters(qustion));
+	else if(lessons[lesson].type == SENTENCE)
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
+	else
+		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(qustion));
+		
+	set_hand(g_utf8_substring(qustion,iter,iter+1));
+	time(&time_qustion);
+}
 
 void key_release_event()
 {
 	int time_taken;
+	int wpm,cpm;
+	float efficiency;
+	gchar result[100];
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
@@ -324,12 +361,24 @@ void key_release_event()
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
 			play("clap.ogg");
-			wpm = (60 / time_taken) * word_count;
-			efficiency = lessons[lesson].win_point/word_count*100;
-			efficiency -= total_errors;			
-			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,
-				"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
-				word_count,wpm,total_errors,time_taken,(int)efficiency);							
+			
+			if (lessons[lesson].type == LETTERS)
+			{
+				wpm = ((60*word_count)/time_taken);
+				efficiency = (wpm*100)/175;
+				efficiency -= total_errors;			
+				sprintf(result,"Result for administrator %d Characters, %d Characters per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
+				word_count,wpm,total_errors,time_taken,(int)efficiency);
+			}
+			else
+			{
+				cpm = ((60*word_count)/time_taken);
+				efficiency = (cpm*100)/35;
+				efficiency -= total_errors;			
+				sprintf(result,"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
+					word_count,cpm,total_errors,time_taken,(int)efficiency);
+			}	
+			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",result);
 			int playing1 = 1;
 			int playing2 = 1;
 			while(1)
@@ -374,6 +423,7 @@ void key_release_event()
 			
 			
 			if (lessons[lesson].type == SENTENCE && g_utf8_collate(g_utf8_substring(qustion,iter-1,iter)," ") == 0)	{
+				word_count += 1;
 				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",g_utf8_substring(qustion,iter,g_utf8_strlen(qustion,-1)));
 			}
 						
@@ -388,48 +438,6 @@ void key_release_event()
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(g_utf8_substring(qustion,iter,g_utf8_strlen(qustion,-1))));
 		}
 	}
-}
-
-void hear_instruction(){
-	int playing1 = 1;
-	while(1)
-	{	
-		ca_context_playing(context,SOUND_ID,&playing1);
-		if (playing1 == 0)
-			break;
-		sleep(1);
-	}
-	
-	tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",lessons[lesson].instruction);
-	while(tts_playing())
-	{ sleep(1);}
-	}
-
-void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
-{
-	point = 0;
-	word_count = 0;
-	total_errors = 0;	
-	time_lesson_start = time(0);
-	lesson = gtk_spin_button_get_value_as_int(spinbutton);
-	lesson += count;
-	gtk_spin_button_set_value(spinbutton,lesson);
-	
-	//generating qustion list
-	if (lessons[lesson].type == LETTERS)
-		make_list_from_list(letter,lesson_letter_count);
-	else if (lessons[lesson].type == WORDS)
-		make_list_from_list(word,lesson_word_count);
-	else if(lessons[lesson].type == SENTENCE)
-		make_list_from_list(sentence,lesson_sentence_count);	
-	
-	hear_instruction();
-	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
-	//To Pass information that which function is called run()
-	iter = 100;
-	set_point_view(lessons[lesson].win_point,ZERO);
-	gtk_label_set_text(instruction_label,lessons[lesson].instruction);
-	run();
 }
 
 
