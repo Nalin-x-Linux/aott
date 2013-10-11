@@ -42,7 +42,7 @@ long int time_qustion;
 long int time_lesson_start;
 
 //Mark 
-int point;
+int current_point;
 int word_count;
 int total_errors;
 
@@ -102,7 +102,7 @@ void play(char* file)
 {
 	gchar* temp = malloc(200);
 	sprintf(temp,"%ssounds/%s",directory,file);
-	ca_context_cancel(context,-1);
+	ca_context_cancel(context,SOUND_ID);
 	ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
 }
 
@@ -112,7 +112,7 @@ void play_music()
         gchar temp[200];
 		int random_num = rand()%7;
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
-        ca_context_cancel(context,-1);
+        ca_context_cancel(context,SOUND_ID);
         ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
 
 
@@ -265,7 +265,7 @@ gchar *get_slited_letters(gchar string[])
 
 void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 {
-	point = 0;
+	current_point = 0;
 	word_count = 0;
 	total_errors = 0;	
 	time_lesson_start = time(0);
@@ -351,13 +351,14 @@ void key_release_event()
 		else if(time_taken <= (lessons[lesson].time*2)+(lessons[lesson].time/2)){
 			play("ok.ogg");
 			set_face("uncertain");
-			point--;}		
+			current_point--;}		
 		else{
 			play("try_more_fast.ogg");
 			set_face("sad");
-			point--;}
+			current_point--;}
 
-		if ( point == lessons[lesson].win_point){
+		if ( current_point == lessons[lesson].win_point){
+			set_face("finish");
 			time_taken = difftime(time(0),time_lesson_start);
 			g_print("\nLesson finish time = %d",time_taken);
 			play("clap.ogg");
@@ -405,8 +406,8 @@ void key_release_event()
 			}
 			}
 		else{
-			set_point_view(SKIP,point);
-			point++;
+			set_point_view(SKIP,current_point);
+			current_point++;
 			word_count += 1;
 			run();
 		}	 
