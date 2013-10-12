@@ -45,6 +45,7 @@ long int time_lesson_start;
 int current_point;
 int word_count;
 int total_errors;
+int continues_wrong;
 
 //TTS Voice 
 gchar *voice;
@@ -294,6 +295,7 @@ void run()
 {
 	int number = rand();
 	correct = "";
+	continues_wrong = 0;
 	//gdk_threads_enter ();
 	gtk_widget_grab_focus(GTK_WIDGET(entry));
 	
@@ -337,6 +339,7 @@ void key_release_event()
 	{
 		gtk_entry_set_text(entry,"");
 		correct = "";
+		continues_wrong = 0;
 		time_taken = difftime(time(0),time_qustion);
 		g_print ( "\nAnswer time = %d\n",time_taken);
 		if (time_taken <= lessons[lesson].time){
@@ -420,6 +423,7 @@ void key_release_event()
 			//Correct letter pressed
 			correct=strdup(out);
 			iter++;
+			continues_wrong = 0;
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
 			play("type.ogg");
 			if (lessons[lesson].type != LETTERS){
@@ -440,7 +444,11 @@ void key_release_event()
 			gtk_entry_set_text(entry,correct);
 			gtk_editable_set_position(GTK_EDITABLE(entry),strlen(correct));
 			total_errors += 1;
+			continues_wrong += 1;
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(g_utf8_substring(qustion,iter,g_utf8_strlen(qustion,-1))));
+			if (continues_wrong == 4){
+				current_point--;
+				run();}
 		}
 	}
 }
