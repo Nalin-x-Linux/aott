@@ -47,18 +47,15 @@ int word_count;
 int total_errors;
 int continues_wrong;
 
-//TTS Voice 
-gchar *voice;
-
 struct lesson_def lessons[100];
 int ending_lesson;
 
-gchar *correct;
+gchar correct[100];
 int lesson;
 int iter;
 
 //Qustion
-gchar *qustion;
+gchar qustion[100];
 int max_qustions;
 
 int lesson_letter_count;
@@ -101,7 +98,7 @@ return NULL;
 
 void play(char* file)
 {
-	gchar* temp = malloc(200);
+	gchar temp[200];
 	sprintf(temp,"%ssounds/%s",directory,file);
 	ca_context_cancel(context,SOUND_ID);
 	ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
@@ -115,22 +112,21 @@ void play_music()
         sprintf(temp,"%ssounds/next_level_%d.ogg",directory,random_num);
         ca_context_cancel(context,SOUND_ID);
         ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
-
-
 }
 
 void load(gchar language_file[])
 {
-	int i;gchar* temp = malloc(500);	
+	int i;
+	gchar temp[500];	
 		
 	//Opening File
 	FILE *fp;
-	gchar* file = malloc(70);
+	gchar file[70];
 	sprintf(file,"%sdata/%s",directory,language_file);
 	fp = fopen(file,"r");
 	
 	//Setting voice
-	voice = malloc(20);
+	gchar voice[20];
 	fscanf(fp,"%s",voice);
 	tts_set_voice(voice);
 	
@@ -170,7 +166,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 	int i=0;
 	int j,k,switch_1,switch_2,temp_switch;
 	max_qustions = 0;
-	fprintf(stderr,"\nCurrent Lesson Allowed : [%s] Target : [%s]",lessons[lesson].allowed_letters,lessons[lesson].target_leters);
+	g_print("\nCurrent Lesson Allowed : [%s] Target : [%s]",lessons[lesson].allowed_letters,lessons[lesson].target_leters);
 	do
 	{
 		//g_print("\nChecking  %s ",list[i]);
@@ -182,8 +178,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			temp_switch = 0;
 			for(k=0;k<g_utf8_strlen(lessons[lesson].allowed_letters,-1);k++)
 			{
-				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0	
-				 ||strcmp(g_utf8_substring(list[i],j,j+1)," ") == 0)
+				if(list[i][j] == lessons[lesson].allowed_letters[k] || list[i][j] == ' ')
 				{
 					temp_switch = 1;
 				}
@@ -195,7 +190,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			//Checking for at least one target letter
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
-				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].target_leters,k,k+1)) == 0)
+				if(list[i][j] == lessons[lesson].target_leters[k])
 					switch_2 = 1;
 			}
 		}
@@ -294,7 +289,7 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 void run()
 {
 	int number = rand();
-	correct = "";
+	correct[0] = '\0';
 	continues_wrong = 0;
 	//gdk_threads_enter ();
 	gtk_widget_grab_focus(GTK_WIDGET(entry));
@@ -338,7 +333,7 @@ void key_release_event()
 	if (strcmp(qustion,out) == 0)
 	{
 		gtk_entry_set_text(entry,"");
-		correct = "";
+		correct[0] = '\0';
 		continues_wrong = 0;
 		time_taken = difftime(time(0),time_qustion);
 		g_print ( "\nAnswer time = %d\n",time_taken);
@@ -421,7 +416,7 @@ void key_release_event()
 					g_utf8_substring(qustion,iter,iter+1)) == 0)
 		{
 			//Correct letter pressed
-			correct=strdup(out);
+			strcpy(correct,out);
 			iter++;
 			continues_wrong = 0;
 			set_hand(g_utf8_substring(qustion,iter,iter+1));
@@ -462,9 +457,6 @@ void set_language()
 
 int main(int argc,char *argv[])
 {
-
-	correct = malloc(200);
-	
 	//File
 	char file[100];
 	
@@ -479,19 +471,16 @@ int main(int argc,char *argv[])
 	
 	//Inetiating Gtk	
 	gtk_init (&argc, &argv);
-
-	//Qustion
-	qustion = malloc(50);
 	
 	//GUI
 	GtkBuilder* builder = gtk_builder_new();
-	gchar* glade_file = malloc(70);
+	gchar glade_file[70];
 	sprintf(glade_file,"%sui/ui.glade",directory);
 	gtk_builder_add_from_file (builder,glade_file, NULL);
 	GtkWidget* window = GTK_WIDGET(gtk_builder_get_object (builder, "window"));
 
 	//Reading data from directory/data/
-	gchar* data_dir = malloc(200);;
+	gchar data_dir[200];
 	sprintf(data_dir,"%sdata",directory);	
 
 	combobox = GTK_COMBO_BOX_TEXT(gtk_builder_get_object (builder, "comboboxtext"));
