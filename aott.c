@@ -47,18 +47,15 @@ int word_count;
 int total_errors;
 int continues_wrong;
 
-//TTS Voice 
-gchar *voice;
-
 struct lesson_def lessons[100];
 int ending_lesson;
 
-gchar *correct;
+gchar correct[100];
 int lesson;
 int iter;
 
 //Qustion
-gchar *qustion;
+gchar qustion[100];
 int max_qustions;
 
 int lesson_letter_count;
@@ -101,7 +98,7 @@ return NULL;
 
 void play(char* file)
 {
-	gchar* temp = malloc(200);
+	gchar temp[200];
 	sprintf(temp,"%ssounds/%s",directory,file);
 	ca_context_cancel(context,SOUND_ID);
 	ca_context_play(context,SOUND_ID,CA_PROP_MEDIA_FILENAME,temp,NULL);
@@ -121,16 +118,18 @@ void play_music()
 
 void load(gchar language_file[])
 {
-	int i;gchar* temp = malloc(500);	
+	int i;
+	gchar temp[500];	
+	gchar* sub_str;
 		
 	//Opening File
 	FILE *fp;
-	gchar* file = malloc(70);
+	gchar file[70];
 	sprintf(file,"%sdata/%s",directory,language_file);
 	fp = fopen(file,"r");
 	
 	//Setting voice
-	voice = malloc(20);
+	gchar voice[20];
 	fscanf(fp,"%s",voice);
 	tts_set_voice(voice);
 	
@@ -150,16 +149,21 @@ void load(gchar language_file[])
 			lesson_word_count = i;}
 	for(i=0;;i++){
 		fgets(temp,100,fp);
-		strcpy(sentence[i],g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
+		sub_str = g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1);
+		strcpy(sentence[i],sub_str);
 		if (strcmp(sentence[i],"====")==0){
 			break;}
-			lesson_sentence_count = i;}
+			lesson_sentence_count = i;
+		g_free(sub_str);
+		}
 			
 	for(i=0;!feof(fp) && fp != NULL;i++){
 		fscanf(fp,"%d %d %d %s %s",&lessons[i].type,
 		&lessons[i].win_point,&lessons[i].time,lessons[i].allowed_letters,lessons[i].target_leters);
 		fgets(temp,500,fp);
-		strcpy(lessons[i].instruction,g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
+		sub_str = g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1);
+		strcpy(lessons[i].instruction,sub_str);
+		g_free(sub_str);
 		ending_lesson = i;
 		g_print("\nRead a Lesson %d with allowed : %s\nLesson Target  \t\t     : %s\n",i,lessons[i].allowed_letters,lessons[i].target_leters);}		
 	fclose(fp);
@@ -168,6 +172,9 @@ void load(gchar language_file[])
 void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 {
 	int i=0;
+	gchar *word_1;
+	gchar *word_2;
+	
 	int j,k,switch_1,switch_2,temp_switch;
 	max_qustions = 0;
 	fprintf(stderr,"\nCurrent Lesson Allowed : [%s] Target : [%s]",lessons[lesson].allowed_letters,lessons[lesson].target_leters);
@@ -177,16 +184,18 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 		switch_1 = 1; switch_2 = 0;
 		for(j=0;j<g_utf8_strlen(list[i],-1);j++)
 		{
-			
+			word_1 = g_utf8_substring(list[i],j,j+1);
 			//Checking allowed
 			temp_switch = 0;
 			for(k=0;k<g_utf8_strlen(lessons[lesson].allowed_letters,-1);k++)
 			{
-				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].allowed_letters,k,k+1)) == 0	
-				 ||strcmp(g_utf8_substring(list[i],j,j+1)," ") == 0)
+				word_2 = g_utf8_substring(lessons[lesson].allowed_letters,k,k+1);
+				
+				if(strcmp(word_1,word_2) == 0	||strcmp(word_1," ") == 0)
 				{
 					temp_switch = 1;
 				}
+				g_free(word_2);
 			}
 			
 			if(temp_switch == 0)
@@ -195,9 +204,12 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			//Checking for at least one target letter
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
-				if(strcmp(g_utf8_substring(list[i],j,j+1),g_utf8_substring(lessons[lesson].target_leters,k,k+1)) == 0)
+				word_2 = g_utf8_substring(lessons[lesson].target_leters,k,k+1);
+				if(strcmp(word_1,word_2) == 0)
 					switch_2 = 1;
+				g_free(word_2);
 			}
+			g_free(word_1);
 		}
 		
 		
@@ -230,35 +242,38 @@ void hear_instruction(){
 gchar *get_slited_letters(gchar string[])
 {
 	gchar *temp;
+	gchar *sub_str;
 	temp = malloc(1000);
 	temp[0] = '\0';
 	int j=0;
 	while(1)
 	{
-		if (g_utf8_collate(g_utf8_substring(string,j,j+1),"\0") == 0)
+		sub_str = g_utf8_substring(string,j,j+1);
+		if (g_utf8_collate(sub_str,"\0") == 0)
 			break;
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1)," ") == 0 ){
+		else if (g_utf8_collate(sub_str," ") == 0 ){
 			g_strlcat(temp,"space",100);
 			break;}
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),",") == 0)
+		else if (g_utf8_collate(sub_str,",") == 0)
 			g_strlcat(temp,"comma",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),".") == 0)
+		else if (g_utf8_collate(sub_str,".") == 0)
 			g_strlcat(temp,"full stop",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"\'") == 0)
+		else if (g_utf8_collate(sub_str,"\'") == 0)
 			g_strlcat(temp,"apostophe",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),";") == 0)
+		else if (g_utf8_collate(sub_str,";") == 0)
 			g_strlcat(temp,"semicolon",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),":") == 0)
+		else if (g_utf8_collate(sub_str,":") == 0)
 			g_strlcat(temp,"colon",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"?") == 0)
+		else if (g_utf8_collate(sub_str,"?") == 0)
 			g_strlcat(temp,"Qustion mark",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"-") == 0)
+		else if (g_utf8_collate(sub_str,"-") == 0)
 			g_strlcat(temp,"Hyphen",100);
 		else
-			g_strlcat(temp,g_utf8_substring(string,j,j+1),100);
+			g_strlcat(temp,sub_str,100);
 			
 		g_strlcat(temp,". ",100);
 		j++;
+		g_free(sub_str);
 	}
 	return temp;
 	
@@ -294,7 +309,7 @@ void jump_to_next_or_previous_lesson(GtkWidget* w,int count)
 void run()
 {
 	int number = rand();
-	correct = "";
+	correct[0] = '\0';
 	continues_wrong = 0;
 	//gdk_threads_enter ();
 	gtk_widget_grab_focus(GTK_WIDGET(entry));
@@ -323,8 +338,10 @@ void run()
 		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
 	else
 		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(qustion));
-		
-	set_hand(g_utf8_substring(qustion,iter,iter+1));
+	
+	gchar* sub_str = g_utf8_substring(qustion,iter,iter+1);
+	set_hand(sub_str);
+	g_free(sub_str);
 	time(&time_qustion);
 }
 
@@ -338,7 +355,7 @@ void key_release_event()
 	if (strcmp(qustion,out) == 0)
 	{
 		gtk_entry_set_text(entry,"");
-		correct = "";
+		correct[0] = '\0';
 		continues_wrong = 0;
 		time_taken = difftime(time(0),time_qustion);
 		g_print ( "\nAnswer time = %d\n",time_taken);
@@ -417,14 +434,15 @@ void key_release_event()
 	}
 	else
 	{
-		if (strcmp(g_utf8_substring(out,iter,iter+1),
-					g_utf8_substring(qustion,iter,iter+1)) == 0)
+		gchar* out_sub_str = g_utf8_substring(out,iter,iter+1);
+		gchar* qustion_sub_str = g_utf8_substring(qustion,iter,iter+1);
+		if (strcmp(out_sub_str,qustion_sub_str) == 0)
 		{
 			//Correct letter pressed
-			correct=strdup(out);
+			strcpy(correct,out);
 			iter++;
 			continues_wrong = 0;
-			set_hand(g_utf8_substring(qustion,iter,iter+1));
+			set_hand(qustion_sub_str);
 			play("type.ogg");
 			if (lessons[lesson].type != LETTERS){
 				clear_tag();
@@ -450,6 +468,8 @@ void key_release_event()
 				current_point--;
 				run();}
 		}
+		g_free(out_sub_str);
+		g_free(qustion_sub_str);
 	}
 }
 
@@ -461,10 +481,7 @@ void set_language()
 }
 
 int main(int argc,char *argv[])
-{
-
-	correct = malloc(200);
-	
+{	
 	//File
 	char file[100];
 	
@@ -480,18 +497,16 @@ int main(int argc,char *argv[])
 	//Inetiating Gtk	
 	gtk_init (&argc, &argv);
 
-	//Qustion
-	qustion = malloc(50);
 	
 	//GUI
 	GtkBuilder* builder = gtk_builder_new();
-	gchar* glade_file = malloc(70);
+	gchar glade_file[70];
 	sprintf(glade_file,"%sui/ui.glade",directory);
 	gtk_builder_add_from_file (builder,glade_file, NULL);
 	GtkWidget* window = GTK_WIDGET(gtk_builder_get_object (builder, "window"));
 
 	//Reading data from directory/data/
-	gchar* data_dir = malloc(200);;
+	gchar data_dir[200];
 	sprintf(data_dir,"%sdata",directory);	
 
 	combobox = GTK_COMBO_BOX_TEXT(gtk_builder_get_object (builder, "comboboxtext"));
