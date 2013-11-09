@@ -345,8 +345,11 @@ void run()
 	time(&time_qustion);
 }
 
-void key_release_event()
+void key_release_event(GtkWidget *widget,GdkEventKey *event)
 {
+	if (event->hardware_keycode != 50 && event->hardware_keycode != 62 
+	&& event->hardware_keycode != 23)
+	{
 	int time_taken;
 	int wpm,cpm;
 	float efficiency;
@@ -354,6 +357,8 @@ void key_release_event()
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
+		
+		
 		gtk_entry_set_text(entry,"");
 		correct[0] = '\0';
 		continues_wrong = 0;
@@ -472,6 +477,7 @@ void key_release_event()
 		g_free(qustion_sub_str);
 	}
 }
+}
 
 
 void set_language()
@@ -588,9 +594,11 @@ int main(int argc,char *argv[])
 	//Level Spinn Button
 	spinbutton = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_level"));
 	
-	play("start.ogg");
 	//tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Welcome to Angela-Typing-Tutor");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox),0);
+	gtk_widget_grab_focus(GTK_WIDGET(combobox));
+	play("start.ogg");
+
 	
 	set_point_view(ZERO,ZERO);
 	set_face("smile");
