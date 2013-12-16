@@ -1,0 +1,13 @@
+Package: angela-typing-tutor
+Priority: optional
+Section: gnome
+Installed-Size: 7000
+Architecture: i386
+Version: 2.2
+Depends: libespeak1,libcanberra-gtk3-0,libgtk-3-0 
+Provides: N.x.L
+Maintainer: Nalin.X.Linux <Nalin.x.Linux@gmail.com>
+Homepage : https://sourceforge.net/projects/aott
+Description: 
+ angela-typing-tutor is a simple eye's free key-board
+ practicing application.

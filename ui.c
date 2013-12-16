@@ -58,9 +58,10 @@ void about()
 	GtkWidget* about_window;
 	about_builder = gtk_builder_new();
 	gchar* glade_file = malloc(70);
-	sprintf(glade_file,"%s/ui/about.glade",directory);
+	sprintf(glade_file,"%sui/about.glade",directory);
+	fprintf(stderr,"%s",glade_file);
 	gtk_builder_add_from_file(about_builder,glade_file,NULL);
-	about_window = GTK_WIDGET(gtk_builder_get_object(about_builder,"window"));
+	about_window = GTK_WIDGET(gtk_builder_get_object(about_builder,"aboutdialog"));
 	gtk_widget_show(about_window);
 }
 

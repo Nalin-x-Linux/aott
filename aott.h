@@ -15,7 +15,7 @@
 #define MAX_LENGTH 100
 
 //Data Directory
-#define directory "usr/share/angela-typing-tutor/"
+#define directory "/usr/share/angela-typing-tutor/"
 
 
 #define FG_COLOR "#FFFFFF"
@@ -28,7 +28,7 @@
 #define ZERO 0
 
 #define AVG_WPM 30
-#define AVG_CPM 150
+#define AVG_CPM 60
 
 //Canberra sound
 #define SOUND_ID 10

@@ -118,6 +118,10 @@ void load(gchar language_file[])
 {
 	int i;
 	gchar temp[500];	
+<<<<<<< HEAD
+=======
+	gchar* sub_str;
+>>>>>>> g_free
 		
 	//Opening File
 	FILE *fp;
@@ -146,16 +150,21 @@ void load(gchar language_file[])
 			lesson_word_count = i;}
 	for(i=0;;i++){
 		fgets(temp,100,fp);
-		strcpy(sentence[i],g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
+		sub_str = g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1);
+		strcpy(sentence[i],sub_str);
 		if (strcmp(sentence[i],"====")==0){
 			break;}
-			lesson_sentence_count = i;}
+			lesson_sentence_count = i;
+		g_free(sub_str);
+		}
 			
 	for(i=0;!feof(fp) && fp != NULL;i++){
 		fscanf(fp,"%d %d %d %s %s",&lessons[i].type,
 		&lessons[i].win_point,&lessons[i].time,lessons[i].allowed_letters,lessons[i].target_leters);
 		fgets(temp,500,fp);
-		strcpy(lessons[i].instruction,g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1));
+		sub_str = g_utf8_substring(temp,0,g_utf8_strlen(temp,-1)-1);
+		strcpy(lessons[i].instruction,sub_str);
+		g_free(sub_str);
 		ending_lesson = i;
 		g_print("\nRead a Lesson %d with allowed : %s\nLesson Target  \t\t     : %s\n",i,lessons[i].allowed_letters,lessons[i].target_leters);}		
 	fclose(fp);
@@ -164,6 +173,9 @@ void load(gchar language_file[])
 void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 {
 	int i=0;
+	gchar *word_1;
+	gchar *word_2;
+	
 	int j,k,switch_1,switch_2,temp_switch;
 	max_qustions = 0;
 	g_print("\nCurrent Lesson Allowed : [%s] Target : [%s]",lessons[lesson].allowed_letters,lessons[lesson].target_leters);
@@ -173,15 +185,22 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 		switch_1 = 1; switch_2 = 0;
 		for(j=0;j<g_utf8_strlen(list[i],-1);j++)
 		{
-			
+			word_1 = g_utf8_substring(list[i],j,j+1);
 			//Checking allowed
 			temp_switch = 0;
 			for(k=0;k<g_utf8_strlen(lessons[lesson].allowed_letters,-1);k++)
 			{
+<<<<<<< HEAD
 				if(list[i][j] == lessons[lesson].allowed_letters[k] || list[i][j] == ' ')
+=======
+				word_2 = g_utf8_substring(lessons[lesson].allowed_letters,k,k+1);
+				
+				if(strcmp(word_1,word_2) == 0	||strcmp(word_1," ") == 0)
+>>>>>>> g_free
 				{
 					temp_switch = 1;
 				}
+				g_free(word_2);
 			}
 			
 			if(temp_switch == 0)
@@ -190,9 +209,16 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 			//Checking for at least one target letter
 			for(k=0;k<g_utf8_strlen(lessons[lesson].target_leters,-1);k++)
 			{
+<<<<<<< HEAD
 				if(list[i][j] == lessons[lesson].target_leters[k])
+=======
+				word_2 = g_utf8_substring(lessons[lesson].target_leters,k,k+1);
+				if(strcmp(word_1,word_2) == 0)
+>>>>>>> g_free
 					switch_2 = 1;
+				g_free(word_2);
 			}
+			g_free(word_1);
 		}
 		
 		
@@ -225,35 +251,38 @@ void hear_instruction(){
 gchar *get_slited_letters(gchar string[])
 {
 	gchar *temp;
+	gchar *sub_str;
 	temp = malloc(1000);
 	temp[0] = '\0';
 	int j=0;
 	while(1)
 	{
-		if (g_utf8_collate(g_utf8_substring(string,j,j+1),"\0") == 0)
+		sub_str = g_utf8_substring(string,j,j+1);
+		if (g_utf8_collate(sub_str,"\0") == 0)
 			break;
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1)," ") == 0 ){
+		else if (g_utf8_collate(sub_str," ") == 0 ){
 			g_strlcat(temp,"space",100);
 			break;}
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),",") == 0)
+		else if (g_utf8_collate(sub_str,",") == 0)
 			g_strlcat(temp,"comma",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),".") == 0)
+		else if (g_utf8_collate(sub_str,".") == 0)
 			g_strlcat(temp,"full stop",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"\'") == 0)
+		else if (g_utf8_collate(sub_str,"\'") == 0)
 			g_strlcat(temp,"apostophe",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),";") == 0)
+		else if (g_utf8_collate(sub_str,";") == 0)
 			g_strlcat(temp,"semicolon",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),":") == 0)
+		else if (g_utf8_collate(sub_str,":") == 0)
 			g_strlcat(temp,"colon",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"?") == 0)
+		else if (g_utf8_collate(sub_str,"?") == 0)
 			g_strlcat(temp,"Qustion mark",100);
-		else if (g_utf8_collate(g_utf8_substring(string,j,j+1),"-") == 0)
+		else if (g_utf8_collate(sub_str,"-") == 0)
 			g_strlcat(temp,"Hyphen",100);
 		else
-			g_strlcat(temp,g_utf8_substring(string,j,j+1),100);
+			g_strlcat(temp,sub_str,100);
 			
 		g_strlcat(temp,". ",100);
 		j++;
+		g_free(sub_str);
 	}
 	return temp;
 	
@@ -318,13 +347,18 @@ void run()
 		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",qustion);
 	else
 		tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",get_slited_letters(qustion));
-		
-	set_hand(g_utf8_substring(qustion,iter,iter+1));
+	
+	gchar* sub_str = g_utf8_substring(qustion,iter,iter+1);
+	set_hand(sub_str);
+	g_free(sub_str);
 	time(&time_qustion);
 }
 
-void key_release_event()
+void key_release_event(GtkWidget *widget,GdkEventKey *event)
 {
+	if (event->hardware_keycode != 50 && event->hardware_keycode != 62 
+	&& event->hardware_keycode != 23)
+	{
 	int time_taken;
 	int wpm,cpm;
 	float efficiency;
@@ -332,6 +366,8 @@ void key_release_event()
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
+		
+		
 		gtk_entry_set_text(entry,"");
 		correct[0] = '\0';
 		continues_wrong = 0;
@@ -412,14 +448,15 @@ void key_release_event()
 	}
 	else
 	{
-		if (strcmp(g_utf8_substring(out,iter,iter+1),
-					g_utf8_substring(qustion,iter,iter+1)) == 0)
+		gchar* out_sub_str = g_utf8_substring(out,iter,iter+1);
+		gchar* qustion_sub_str = g_utf8_substring(qustion,iter,iter+1);
+		if (strcmp(out_sub_str,qustion_sub_str) == 0)
 		{
 			//Correct letter pressed
 			strcpy(correct,out);
 			iter++;
 			continues_wrong = 0;
-			set_hand(g_utf8_substring(qustion,iter,iter+1));
+			set_hand(qustion_sub_str);
 			play("type.ogg");
 			if (lessons[lesson].type != LETTERS){
 				clear_tag();
@@ -445,7 +482,10 @@ void key_release_event()
 				current_point--;
 				run();}
 		}
+		g_free(out_sub_str);
+		g_free(qustion_sub_str);
 	}
+}
 }
 
 
@@ -456,7 +496,11 @@ void set_language()
 }
 
 int main(int argc,char *argv[])
+<<<<<<< HEAD
 {
+=======
+{	
+>>>>>>> g_free
 	//File
 	char file[100];
 	
@@ -471,6 +515,10 @@ int main(int argc,char *argv[])
 	
 	//Inetiating Gtk	
 	gtk_init (&argc, &argv);
+<<<<<<< HEAD
+=======
+
+>>>>>>> g_free
 	
 	//GUI
 	GtkBuilder* builder = gtk_builder_new();
@@ -562,9 +610,11 @@ int main(int argc,char *argv[])
 	//Level Spinn Button
 	spinbutton = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_level"));
 	
-	play("start.ogg");
 	//tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Welcome to Angela-Typing-Tutor");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox),0);
+	gtk_widget_grab_focus(GTK_WIDGET(combobox));
+	play("start.ogg");
+
 	
 	set_point_view(ZERO,ZERO);
 	set_face("smile");
