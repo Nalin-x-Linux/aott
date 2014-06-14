@@ -1,6 +1,6 @@
 aclocal
 autoheader
-automake
+automake --add-missing
 autoconf
 ./configure --prefix="/usr"
 make
