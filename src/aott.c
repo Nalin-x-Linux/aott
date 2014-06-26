@@ -195,7 +195,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 				{
 					temp_switch = 1;
 				}
-				g_free(word_2);
+				//g_free(word_2);
 			}
 			
 			if(temp_switch == 0)
@@ -208,9 +208,9 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 					word_2 = g_utf8_substring(lessons[lesson].target_leters,k,k+1);
 				if(strcmp(word_1,word_2) == 0)
 					switch_2 = 1;
-				g_free(word_2);
+				//g_free(word_2);
 			}
-			g_free(word_1);
+			//g_free(word_1);
 		}
 		
 		
