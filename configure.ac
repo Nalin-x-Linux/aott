@@ -8,8 +8,8 @@ m4_define([ibus_micro_version], [99])
 AC_INIT(angela-typing-tutor, version-0.1)
 AM_INIT_AUTOMAKE([1.10])
 
-AM_PROG_CC_C_O
-AC_PROG_CC
+#AM_PROG_CC_C_O
+#AC_PROG_CC
 AC_GNU_SOURCE
 AM_SANITY_CHECK
 
@@ -29,6 +29,9 @@ data/number/Makefile
 data/sounds/Makefile
 data/ui/Makefile
 src/Makefile
+po/Makefile
+po/ml/Makefile
+po/hi/Makefile
 )
 
 AC_OUTPUT

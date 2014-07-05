@@ -24,6 +24,8 @@ gcc -Wall -o angela aott.c -lespeak -I/usr/include/espeak/ `pkg-config --cflags 
 #include "aott.h"
 #include "ui.h"
 
+#include <libintl.h> //For code only; not needed for glade
+#define _(String) gettext (String) //For code only; not needed for glade
 
 
 //Lesson Struct
@@ -253,22 +255,22 @@ gchar *get_slited_letters(gchar string[])
 		if (g_utf8_collate(sub_str,"\0") == 0)
 			break;
 		else if (g_utf8_collate(sub_str," ") == 0 ){
-			g_strlcat(temp,"space",100);
+			g_strlcat(temp,_("space"),100);
 			break;}
 		else if (g_utf8_collate(sub_str,",") == 0)
-			g_strlcat(temp,"comma",100);
+			g_strlcat(temp,_("comma"),100);
 		else if (g_utf8_collate(sub_str,".") == 0)
-			g_strlcat(temp,"full stop",100);
+			g_strlcat(temp,_("full stop"),100);
 		else if (g_utf8_collate(sub_str,"\'") == 0)
-			g_strlcat(temp,"apostophe",100);
+			g_strlcat(temp,_("apostophe"),100);
 		else if (g_utf8_collate(sub_str,";") == 0)
-			g_strlcat(temp,"semicolon",100);
+			g_strlcat(temp,_("semicolon"),100);
 		else if (g_utf8_collate(sub_str,":") == 0)
-			g_strlcat(temp,"colon",100);
+			g_strlcat(temp,_("colon"),100);
 		else if (g_utf8_collate(sub_str,"?") == 0)
-			g_strlcat(temp,"Qustion mark",100);
+			g_strlcat(temp,_("Qustion mark"),100);
 		else if (g_utf8_collate(sub_str,"-") == 0)
-			g_strlcat(temp,"Hyphen",100);
+			g_strlcat(temp,_("Hyphen"),100);
 		else
 			g_strlcat(temp,sub_str,100);
 			
@@ -396,7 +398,7 @@ void key_release_event(GtkWidget *widget,GdkEventKey *event)
 				efficiency -= total_errors;
 				if (efficiency > 100)
 					efficiency = 100;
-				sprintf(result,"Result for administrator %d Characters, %d Characters per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
+				sprintf(result,_("Result for administrator %d Characters, %d Characters per minute, %d Errors, In %d Seconds  And Efficiency = %d!"),
 				word_count,wpm,total_errors,time_taken,(int)efficiency);
 			}
 			else
@@ -406,7 +408,7 @@ void key_release_event(GtkWidget *widget,GdkEventKey *event)
 				efficiency -= total_errors;
 				if (efficiency > 100)
 					efficiency = 100;			
-				sprintf(result,"Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!",
+				sprintf(result,_("Result for administrator %d Words, %d Word per minute, %d Errors, In %d Seconds  And Efficiency = %d!"),
 					word_count,cpm,total_errors,time_taken,(int)efficiency);
 			}	
 			tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"%s",result);
@@ -428,7 +430,7 @@ void key_release_event(GtkWidget *widget,GdkEventKey *event)
 				play_music();
 				jump_to_next_or_previous_lesson(NULL,+1);}
 			else{
-				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,"Congratulations! You have finished all lessons!"); 				
+				tts_say(DEFAULT_VALUE,DEFAULT_VALUE,INTERRUPT,_("Congratulations! You have finished all lessons!")); 				
 			}
 			}
 		else{
@@ -500,6 +502,9 @@ int main(int argc,char *argv[])
 	
 	//Inetiating Gdk Threads
 	//gdk_threads_init ();
+	
+	//Gettext
+	textdomain("aott");
 	
 	//Inetiating Gtk	
 	gtk_init (&argc, &argv);

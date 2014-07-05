@@ -1,6 +1,7 @@
 SUBDIRS = \
 	data \
 	src \
+	po \
 	$(NULL)
 
 ACLOCAL_AMFLAGS = -I m4

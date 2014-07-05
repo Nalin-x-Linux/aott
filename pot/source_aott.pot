@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-03 18:26-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/aott.c:258
+msgid "space"
+msgstr ""
+
+#: src/aott.c:261
+msgid "comma"
+msgstr ""
+
+#: src/aott.c:263
+msgid "full stop"
+msgstr ""
+
+#: src/aott.c:265
+msgid "apostophe"
+msgstr ""
+
+#: src/aott.c:267
+msgid "semicolon"
+msgstr ""
+
+#: src/aott.c:269
+msgid "colon"
+msgstr ""
+
+#: src/aott.c:271
+msgid "Qustion mark"
+msgstr ""
+
+#: src/aott.c:273
+msgid "Hyphen"
+msgstr ""
+
+#: src/aott.c:401
+#, c-format
+msgid ""
+"Result for administrator %d Characters, %d Characters per minute, %d Errors, "
+"In %d Seconds  And Efficiency = %d!"
+msgstr ""
+
+#: src/aott.c:411
+#, c-format
+msgid ""
+"Result for administrator %d Words, %d Word per minute, %d Errors, In %d "
+"Seconds  And Efficiency = %d!"
+msgstr ""
+
+#: src/aott.c:433
+msgid "Congratulations! You have finished all lessons!"
+msgstr ""
