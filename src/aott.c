@@ -356,7 +356,7 @@ void key_release_event(GtkWidget *widget,GdkEventKey *event)
 	int time_taken;
 	int wpm,cpm;
 	float efficiency;
-	gchar result[150];
+	gchar result[500];
 	const gchar *out = gtk_entry_get_text(entry);
 	if (strcmp(qustion,out) == 0)
 	{
