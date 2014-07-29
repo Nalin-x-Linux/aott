@@ -26,6 +26,9 @@ SUBDIRS = data \
 	ui 
 
 aottdir = $(pkgdatadir)/
+
+appdesktop_DATA = angela-typing-tutor.desktop
+appdesktopdir = $(datadir)/applications/
 		
 CLEANFILES = \
 	*~ \
