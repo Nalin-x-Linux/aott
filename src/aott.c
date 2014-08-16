@@ -181,7 +181,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 	g_print("\nCurrent Lesson Allowed : [%s] Target : [%s]",lessons[lesson].allowed_letters,lessons[lesson].target_leters);
 	do
 	{
-		//g_print("\nChecking  %s ",list[i]);
+		g_print("\nChecking  %s ",list[i]);
 		switch_1 = 1; switch_2 = 0;
 		for(j=0;j<g_utf8_strlen(list[i],-1);j++)
 		{
@@ -193,7 +193,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 				if(list[i][j] == lessons[lesson].allowed_letters[k] || list[i][j] == ' ')
 					word_2 = g_utf8_substring(lessons[lesson].allowed_letters,k,k+1);
 				
-				if(strcmp(word_1,word_2) == 0	||strcmp(word_1," ") == 0)
+				if(g_strcmp0(word_1,word_2) == 0	|| g_strcmp0(word_1," ") == 0)
 				{
 					temp_switch = 1;
 				}
@@ -212,7 +212,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 					switch_2 = 1;
 				//g_free(word_2);
 			}
-			//g_free(word_1);
+			g_free(word_1);
 		}
 		
 		
@@ -225,6 +225,7 @@ void make_list_from_list(gchar list[][MAX_LENGTH],int size)
 		i++;
 	}
 	while(i <= size);
+	g_print("Lessons created!");
 }
 
 void hear_instruction(){
@@ -487,6 +488,7 @@ void set_language()
 {	
 	load(gtk_combo_box_text_get_active_text(combobox));
 	gtk_spin_button_set_range(spinbutton,0,ending_lesson-1);
+	gtk_spin_button_set_value(spinbutton,0);
 }
 
 int main(int argc,char *argv[])
