@@ -13,6 +13,7 @@ AM_INIT_AUTOMAKE([1.10])
 AC_GNU_SOURCE
 AM_SANITY_CHECK
 
+AC_CONFIG_HEADERS([config.h])
 
 AC_CHECK_LIB([espeak],[espeak_Cancel],,[AC_MSG_ERROR([Espeak development Library not found!])])
 
